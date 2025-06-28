@@ -49,7 +49,7 @@ export function AppSidebar() {
 
             <SidebarFooter>
                 <NavUser />
-                <NavFooter items={footerNavItems} className="mt-auto" />
+                {/* <NavFooter items={footerNavItems} className="mt-auto" /> */}
             </SidebarFooter>
         </Sidebar>
     );

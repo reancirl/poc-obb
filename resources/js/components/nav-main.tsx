@@ -1,7 +1,24 @@
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutDashboard, Package, ShoppingCart, Users, Settings } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  Package, 
+  ShoppingCart, 
+  Users, 
+  Settings, 
+  ClipboardList, 
+  Megaphone, 
+  Globe, 
+  Cog, 
+  Code, 
+  PlusCircle, 
+  Eye, 
+  User, 
+  MessageSquare,
+  Star,
+  Heart
+} from 'lucide-react';
 
 type NavItemWithRoles = NavItem & {
     roles?: string[]; // Array of roles that can see this item (empty means all roles)
@@ -19,46 +36,127 @@ export function NavMain() {
             title: 'Dashboard',
             href: '/dashboard',
             icon: LayoutDashboard,
-        },
-        // Admin only items
-        {
-            title: 'Users',
+          },
+        
+          // Admin only items
+          {
+            title: 'User Management',
             href: '/admin/users',
             icon: Users,
             roles: ['admin'],
-        },
-        {
+          },
+          {
+            title: 'Listing Management',
+            href: '/admin/listings',
+            icon: ClipboardList,
+            roles: ['admin'],
+          },
+          {
+            title: 'Marketing',
+            href: '/admin/marketing',
+            icon: Megaphone,
+            roles: ['admin'],
+          },
+          {
+            title: 'Manage Website',
+            href: '/admin/website',
+            icon: Globe,
+            roles: ['admin'],
+          },
+          {
+            title: 'Setup',
+            href: '/admin/setup',
+            icon: Cog,
+            roles: ['admin'],
+          },
+          {
             title: 'Settings',
             href: '/admin/settings',
-            icon: Settings,
+            icon: Cog,
             roles: ['admin'],
-        },
-        // Seller only items
-        {
-            title: 'Products',
-            href: '/seller/products',
-            icon: Package,
+          },
+          {
+            title: 'Developer Settings',
+            href: '/admin/dev-settings',
+            icon: Code,
+            roles: ['admin'],
+          },
+        
+          // Seller only items
+          {
+            title: 'Add Listing',
+            href: '/seller/listings/new',
+            icon: PlusCircle,
             roles: ['seller', 'admin'],
-        },
-        {
-            title: 'Orders',
-            href: '/seller/orders',
-            icon: ShoppingCart,
+          },
+          {
+            title: 'Listing Page',
+            href: '/seller/listings',
+            icon: ClipboardList,
             roles: ['seller', 'admin'],
-        },
-        // Buyer only items
-        {
-            title: 'My Orders',
-            href: '/buyer/orders',
-            icon: ShoppingCart,
+          },
+          {
+            title: 'Browse Listings',
+            href: '/seller/browse',
+            icon: Eye,
+            roles: ['seller', 'admin'],
+          },
+          {
+            title: 'Account',
+            href: '/seller/account',
+            icon: User,
+            roles: ['seller', 'admin'],
+          },
+          {
+            title: 'Message Center',
+            href: '/seller/messages',
+            icon: MessageSquare,
+            roles: ['seller', 'admin'],
+          },
+          {
+            title: 'Feedback',
+            href: '/seller/feedback',
+            icon: Star,
+            roles: ['seller', 'admin'],
+          },
+        
+          // Buyer only items
+          {
+            title: 'Interested Listings',
+            href: '/buyer/interested',
+            icon: Heart,
             roles: ['buyer'],
-        },
-        {
-            title: 'Wishlist',
-            href: '/buyer/wishlist',
-            icon: Package,
+          },
+          {
+            title: 'All Listings',
+            href: '/buyer/listings',
+            icon: ClipboardList,
             roles: ['buyer'],
-        },
+          },
+          {
+            title: 'Recently Viewed',
+            href: '/buyer/recent',
+            icon: Eye,
+            roles: ['buyer'],
+          },
+          {
+            title: 'Message Center',
+            href: '/buyer/messages',
+            icon: MessageSquare,
+            roles: ['buyer'],
+          },
+          {
+            title: 'Account',
+            href: '/buyer/account',
+            icon: User,
+            roles: ['buyer'],
+          },
+          {
+            title: 'Feedback',
+            href: '/buyer/feedback',
+            icon: Star,
+            roles: ['buyer'],
+          },
     ];
 
     // Filter items based on user role
