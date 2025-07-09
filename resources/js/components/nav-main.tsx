@@ -96,6 +96,12 @@ export function NavMain() {
             roles: ['seller', 'admin'],
           },
           {
+            title: 'Message Center',
+            href: '/seller/messages',
+            icon: MessageSquare,
+            roles: ['seller', 'admin'],
+          },
+          {
             title: 'Browse Listings',
             href: '/seller/browse',
             icon: Eye,
@@ -105,12 +111,6 @@ export function NavMain() {
             title: 'Account',
             href: '/seller/account',
             icon: User,
-            roles: ['seller', 'admin'],
-          },
-          {
-            title: 'Message Center',
-            href: '/seller/messages',
-            icon: MessageSquare,
             roles: ['seller', 'admin'],
           },
           {

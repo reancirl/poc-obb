@@ -22,24 +22,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // Admin routes
-    Route::prefix('admin')->middleware(['role:admin'])->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
+    Route::prefix('admin')->middleware(['role:admin'])->name('admin.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
         
-        // User Management Routes
-        Route::resource('users', \App\Http\Controllers\Admin\UserController::class)
-            ->names('admin.users')
-            ->except(['show']);
-            
-        // Suspend/Unsuspend User Routes
+        // User Management
+        Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
         Route::post('users/{user}/suspend', [\App\Http\Controllers\Admin\UserController::class, 'suspend'])
-            ->name('admin.users.suspend');
+            ->name('users.suspend');
         Route::post('users/{user}/unsuspend', [\App\Http\Controllers\Admin\UserController::class, 'unsuspend'])
-            ->name('admin.users.unsuspend');
+            ->name('users.unsuspend');
+        
+        // Listings Management - Admin can manage all listings
+        Route::resource('listings', \App\Http\Controllers\Admin\ListingController::class);
     });
     
     // Seller routes
-    Route::prefix('seller')->middleware(['role:seller'])->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'seller'])->name('seller.dashboard');
+    Route::prefix('seller')->middleware(['role:seller'])->name('seller.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'seller'])->name('dashboard');
+        
+        // Listings Management - Sellers can only manage their own listings
+        Route::resource('listings', \App\Http\Controllers\Seller\ListingController::class);
         // Add more seller-specific routes here
     });
     

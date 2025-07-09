@@ -80,4 +80,9 @@ class User extends Authenticatable
     {
         return $this->suspended_at !== null;
     }
+
+    public function listings()
+    {
+        return $this->hasMany(Listing::class);
+    }
 }

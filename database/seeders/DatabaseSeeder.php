@@ -18,6 +18,11 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
         ]);
         
+        // Create sample listings
+        $this->call([
+            ListingsTableSeeder::class,
+        ]);
+        
         // You can uncomment and use factories for testing
         // \App\Models\User::factory(10)->create();
     }
