@@ -24,7 +24,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin routes
     Route::prefix('admin')->middleware(['role:admin'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
-        // Add more admin-specific routes here
+        
+        // User Management Routes
+        Route::resource('users', \App\Http\Controllers\Admin\UserController::class)
+            ->names('admin.users')
+            ->except(['show']);
+            
+        // Suspend/Unsuspend User Routes
+        Route::post('users/{user}/suspend', [\App\Http\Controllers\Admin\UserController::class, 'suspend'])
+            ->name('admin.users.suspend');
+        Route::post('users/{user}/unsuspend', [\App\Http\Controllers\Admin\UserController::class, 'unsuspend'])
+            ->name('admin.users.unsuspend');
     });
     
     // Seller routes

@@ -60,7 +60,7 @@ export default function SearchPage() {
             <button className="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100">
               Clear
             </button>
-            <button className="ml-auto px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center space-x-1">
+            <button className="ml-auto px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center space-x-1">
               <span>Save Search</span><span>▼</span>
             </button>
           </div>
@@ -89,7 +89,7 @@ export default function SearchPage() {
               <div className="flex flex-col items-end md:col-span-1">
                 <span className="text-xl font-bold">$195,000</span>
                 <span className="text-sm text-gray-500">Cash Flow: $230,000</span>
-                <button className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg">
+                <button className="mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
                   Contact
                 </button>
               </div>
