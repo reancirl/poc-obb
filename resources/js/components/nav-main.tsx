@@ -85,7 +85,7 @@ export function NavMain() {
           // Seller only items
           {
             title: 'Add Listing',
-            href: '/seller/listings/new',
+            href: '/seller/listings/create',
             icon: PlusCircle,
             roles: ['seller', 'admin'],
           },

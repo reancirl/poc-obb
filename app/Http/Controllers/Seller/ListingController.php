@@ -52,7 +52,6 @@ class ListingController extends Controller
      */
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'headline' => 'required|string|max:255',
             'industry' => 'required|string|max:255',
@@ -69,13 +68,13 @@ class ListingController extends Controller
             'asking_price' => 'required|numeric|min:0',
             'cash_flow' => 'nullable|numeric|min:0',
             'gross_revenue' => 'nullable|numeric|min:0',
-            'ebitda' => 'nullable|string|max:255',
-            'rent' => 'nullable|string|max:255',
+            'ebitda' => 'nullable|integer',
+            'rent' => 'nullable|integer',
             'year_established' => 'nullable|integer|min:1800|max:' . (date('Y') + 1),
             'seller_financing' => 'boolean',
             'business_description' => 'nullable|string',
             'ad_id' => 'nullable|string|max:100',
-            'inventory' => 'nullable|string',
+            'inventory' => 'nullable|integer',
             'real_estate_type' => 'nullable|string|max:100',
             'building_size' => 'nullable|numeric|min:0',
             'lease_expiration' => 'nullable|string|max:100',
@@ -90,9 +89,8 @@ class ListingController extends Controller
             'agent_phone_number' => 'nullable|string|max:20',
             'status' => 'required|in:draft,published,sold,inactive',
         ]);
-
         // Set the authenticated user as the owner
-        $validated['user_id'] = Auth::id();
+        $validated['user_id'] = Auth::user()->id;
 
         $listing = Listing::create($validated);
 
@@ -144,12 +142,12 @@ class ListingController extends Controller
             'cash_flow' => 'nullable|numeric|min:0',
             'gross_revenue' => 'nullable|numeric|min:0',
             'ebitda' => 'nullable|string|max:255',
-            'rent' => 'nullable|string|max:255',
+            'rent' => 'nullable|integer',
             'year_established' => 'nullable|integer|min:1800|max:' . (date('Y') + 1),
             'seller_financing' => 'boolean',
             'business_description' => 'nullable|string',
             'ad_id' => 'nullable|string|max:100',
-            'inventory' => 'nullable|string',
+            'inventory' => 'nullable|integer|min:0',
             'real_estate_type' => 'nullable|string|max:100',
             'building_size' => 'nullable|numeric|min:0',
             'lease_expiration' => 'nullable|string|max:100',

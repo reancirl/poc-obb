@@ -42,7 +42,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         // Listings Management - Sellers can only manage their own listings
         Route::resource('listings', \App\Http\Controllers\Seller\ListingController::class);
-        // Add more seller-specific routes here
+        
+        // Messages
+        Route::get('/messages', function () {
+            return Inertia::render('Seller/Messages/Index');
+        })->name('seller.messages.index');
     });
     
     // Buyer routes
