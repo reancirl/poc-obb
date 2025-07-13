@@ -7,6 +7,7 @@ use App\Models\Listing;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class ListingController extends Controller
 {
@@ -15,8 +16,6 @@ class ListingController extends Controller
      */
     public function index(Request $request)
     {
-        // $this->authorize('viewAny', Listing::class);
-
         $listings = Listing::with('user')
             ->latest()
             ->when($request->search, function ($query, $search) {
@@ -41,9 +40,7 @@ class ListingController extends Controller
      * Show the form for creating a new resource.
      */
     public function create()
-    {
-        $this->authorize('create', Listing::class);
-        
+    {        
         return Inertia::render('Admin/Listings/Create');
     }
 
@@ -52,8 +49,6 @@ class ListingController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create', Listing::class);
-
         $validated = $request->validate([
             'headline' => 'required|string|max:255',
             'industry' => 'required|string|max:255',
@@ -102,9 +97,7 @@ class ListingController extends Controller
      * Display the specified resource.
      */
     public function show(Listing $listing)
-    {
-        $this->authorize('view', $listing);
-        
+    {        
         $listing->load('user');
         
         return Inertia::render('Admin/Listings/Show', [
@@ -116,10 +109,8 @@ class ListingController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Listing $listing)
-    {
-        $this->authorize('update', $listing);
-        
-        $sellers = User::role('seller')->select('id', 'name', 'email')->get();
+    {        
+        $sellers = User::select('id', 'name', 'email')->get();
         
         return Inertia::render('Admin/Listings/Edit', [
             'listing' => $listing,
@@ -132,8 +123,6 @@ class ListingController extends Controller
      */
     public function update(Request $request, Listing $listing)
     {
-        $this->authorize('update', $listing);
-
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'headline' => 'required|string|max:255',
@@ -183,9 +172,7 @@ class ListingController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(Listing $listing)
-    {
-        $this->authorize('delete', $listing);
-        
+    {        
         $listing->delete();
         
         if (request()->wantsJson()) {

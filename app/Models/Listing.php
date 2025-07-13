@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Listing extends Model
 {
@@ -47,6 +49,37 @@ class Listing extends Model
         'agent_phone_number',
         'status',
     ];
+
+    protected $appends = ['image_urls'];
+
+    /**
+     * Get the images for the listing.
+     */
+    public function images()
+    {
+        return $this->hasMany(ListingImage::class)->orderBy('order');
+    }
+
+    /**
+     * Get the image URLs for the listing.
+     *
+     * @return array
+     */
+    public function getImageUrlsAttribute()
+    {
+        if (!$this->relationLoaded('images')) {
+            $this->load('images');
+        }
+
+        return $this->images->map(function ($image) {
+            return [
+                'id' => $image->id,
+                'url' => Storage::url($image->path),
+                'is_primary' => (bool) $image->is_primary,
+                'order' => $image->order,
+            ];
+        })->toArray();
+    }
 
     protected $casts = [
         'asking_price' => 'decimal:2',

@@ -283,7 +283,7 @@ export default function ListingForm({
               )}
             </div>
           ))}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label htmlFor="seller_financing" className="pr-2">Seller Financing</Label>
             <input
               type="checkbox"
@@ -296,7 +296,7 @@ export default function ListingForm({
             {errors.seller_financing && (
               <p className="text-sm text-red-500">{errors.seller_financing}</p>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
 

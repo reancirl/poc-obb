@@ -71,7 +71,7 @@ class ListingController extends Controller
             'ebitda' => 'nullable|integer',
             'rent' => 'nullable|integer',
             'year_established' => 'nullable|integer|min:1800|max:' . (date('Y') + 1),
-            'seller_financing' => 'boolean',
+            // 'seller_financing' => 'boolean',
             'business_description' => 'nullable|string',
             'ad_id' => 'nullable|string|max:100',
             'inventory' => 'nullable|integer',
@@ -88,11 +88,31 @@ class ListingController extends Controller
             'listing_agent' => 'nullable|string|max:255',
             'agent_phone_number' => 'nullable|string|max:20',
             'status' => 'required|in:draft,published,sold,inactive',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB max per file
+            'primary_image_index' => 'nullable|integer',
         ]);
+
         // Set the authenticated user as the owner
         $validated['user_id'] = Auth::user()->id;
 
+        // Create the listing
         $listing = Listing::create($validated);
+
+        // Handle image uploads if any
+        if ($request->hasFile('images')) {
+            $primaryIndex = $request->input('primary_image_index', 0);
+            
+            foreach ($request->file('images') as $index => $image) {
+                $path = $image->store('listings/' . $listing->id, 'public');
+                
+                $listing->images()->create([
+                    'path' => $path,
+                    'is_primary' => $index == $primaryIndex,
+                    'order' => $index,
+                ]);
+            }
+        }
 
         return redirect()->route('seller.listings.show', $listing->id)
             ->with('success', 'Listing created successfully!');
@@ -103,10 +123,10 @@ class ListingController extends Controller
      */
     public function show(Listing $listing)
     {        
-        $listing->load('user');
+        $listing->load(['user', 'images']);
         
         return Inertia::render('Seller/Listings/Show', [
-            'listing' => $listing,
+            'listing' => $listing->append('image_urls'),
         ]);
     }
 
@@ -115,8 +135,10 @@ class ListingController extends Controller
      */
     public function edit(Listing $listing)
     {
+        $listing->load('images');
+        
         return Inertia::render('Seller/Listings/Edit', [
-            'listing' => $listing,
+            'listing' => $listing->append('image_urls'),
         ]);
     }
 
@@ -141,10 +163,10 @@ class ListingController extends Controller
             'asking_price' => 'required|numeric|min:0',
             'cash_flow' => 'nullable|numeric|min:0',
             'gross_revenue' => 'nullable|numeric|min:0',
-            'ebitda' => 'nullable|string|max:255',
+            'ebitda' => 'nullable|integer',
             'rent' => 'nullable|integer',
             'year_established' => 'nullable|integer|min:1800|max:' . (date('Y') + 1),
-            'seller_financing' => 'boolean',
+            // 'seller_financing' => 'boolean',
             'business_description' => 'nullable|string',
             'ad_id' => 'nullable|string|max:100',
             'inventory' => 'nullable|integer|min:0',
@@ -161,11 +183,44 @@ class ListingController extends Controller
             'listing_agent' => 'nullable|string|max:255',
             'agent_phone_number' => 'nullable|string|max:20',
             'status' => 'required|in:draft,published,sold,inactive',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB max per file
+            'primary_image_index' => 'nullable|integer',
+            'deleted_image_ids' => 'nullable|array',
+            'deleted_image_ids.*' => 'exists:listing_images,id',
         ]);
 
+        // Update the listing
         $listing->update($validated);
 
-        return redirect()->route('seller.listings.show', $listing->id)
+        // Handle deleted images
+        if ($request->has('deleted_image_ids') && is_array($request->deleted_image_ids)) {
+            $listing->images()->whereIn('id', $request->deleted_image_ids)->delete();
+        }
+
+        // Handle new image uploads
+        if ($request->hasFile('images')) {
+            $primaryIndex = $request->input('primary_image_index', 0);
+            $order = $listing->images()->max('order') ?? 0;
+            
+            foreach ($request->file('images') as $index => $image) {
+                $path = $image->store('listings/' . $listing->id, 'public');
+                
+                $listing->images()->create([
+                    'path' => $path,
+                    'is_primary' => $index == $primaryIndex,
+                    'order' => ++$order,
+                ]);
+            }
+        }
+
+        // Update primary image if changed
+        if ($request->has('primary_image_id')) {
+            $listing->images()->update(['is_primary' => false]);
+            $listing->images()->where('id', $request->primary_image_id)->update(['is_primary' => true]);
+        }
+
+        return redirect()->back()
             ->with('success', 'Listing updated successfully!');
     }
 
