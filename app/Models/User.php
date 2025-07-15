@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -84,5 +85,27 @@ class User extends Authenticatable
     public function listings()
     {
         return $this->hasMany(Listing::class);
+    }
+    
+    /**
+     * Get the listings that the user has marked as interested.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function interestedListings(): BelongsToMany
+    {
+        return $this->belongsToMany(Listing::class, 'interested_listings')
+            ->withTimestamps();
+    }
+    
+    /**
+     * Check if the user is interested in a listing.
+     *
+     * @param int $listingId
+     * @return bool
+     */
+    public function isInterestedIn(int $listingId): bool
+    {
+        return $this->interestedListings()->where('listing_id', $listingId)->exists();
     }
 }

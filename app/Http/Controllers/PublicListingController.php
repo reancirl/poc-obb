@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Listing;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class PublicListingController extends Controller
@@ -56,9 +57,18 @@ class PublicListingController extends Controller
                 ];
             });
         
+        // Add interest information if user is logged in as a buyer
+        $user = Auth::user();
+        $interestedListingIds = [];
+        
+        if ($user && $user->role === 'buyer') {
+            $interestedListingIds = $user->interestedListings()->pluck('listing_id')->toArray();
+        }
+        
         return Inertia::render('Listings/Index', [
             'listings' => $listings,
             'filters' => $request->only(['search', 'industry']),
+            'interestedListingIds' => $interestedListingIds,
         ]);
     }
 
@@ -74,7 +84,21 @@ class PublicListingController extends Controller
             abort(404);
         }
         
+        // Check if the authenticated user is interested in this listing
+        $user = Auth::user();
+        $userInterested = false;
+        $interestedCount = 0;
+        
+        if ($user && $user->role === 'buyer') {
+            $userInterested = $user->isInterestedIn($listing->id);
+        }
+        
+        // Get the count of interested users
+        $interestedCount = $listing->interestedUsers()->count();
+        
         return Inertia::render('Listings/Show', [
+            'userInterested' => $userInterested,
+            'interestedCount' => $interestedCount,
             'listing' => [
                 'id' => $listing->id,
                 'headline' => $listing->headline,

@@ -93,13 +93,13 @@ export function NavMain() {
             title: 'Listing Page',
             href: '/seller/listings',
             icon: ClipboardList,
-            roles: ['seller', 'admin'],
+            roles: ['seller'],
           },
           {
             title: 'Message Center',
-            href: '/seller/messages',
+            href: '/messages',
             icon: MessageSquare,
-            roles: ['seller', 'admin'],
+            roles: ['seller', 'buyer'],
           },
           {
             title: 'Account',
@@ -125,12 +125,6 @@ export function NavMain() {
             title: 'All Listings',
             href: '/listings',
             icon: ClipboardList,
-            roles: ['buyer'],
-          },
-          {
-            title: 'Message Center',
-            href: '/buyer/messages',
-            icon: MessageSquare,
             roles: ['buyer'],
           },
           {

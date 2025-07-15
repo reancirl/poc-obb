@@ -1,6 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
 import PublicLayout from '@/layouts/public-layout';
+import StarButton from '@/components/StarButton';
+import Pagination from '@/components/Pagination';
 
 interface Image {
   id: number;
@@ -26,17 +28,23 @@ interface Props {
   listings: {
     data: Listing[];
     links: any;
+    current_page: number;
+    last_page: number;
   };
   filters: {
     search?: string;
     industry?: string;
   };
   auth: {
-    user: any | null;
+    user: {
+      id: number;
+      role: string;
+    } | null;
   };
+  interestedListingIds?: number[];
 }
 
-export default function PublicListings({ listings, filters, auth }: Props) {
+export default function PublicListings({ listings, filters, auth, interestedListingIds = [] }: Props) {
   const [search, setSearch] = useState(filters.search || '');
   const [industry, setIndustry] = useState(filters.industry || '');
   
@@ -172,8 +180,20 @@ export default function PublicListings({ listings, filters, auth }: Props) {
                         <div className="text-sm font-medium text-gray-500">
                           Asking Price
                         </div>
-                        <div className="text-lg font-bold text-green-600">
-                          {formatCurrency(listing.asking_price)}
+                        <div className="flex items-center">
+                          <div className="text-lg font-bold text-green-600 mr-2">
+                            {formatCurrency(listing.asking_price)}
+                          </div>
+                          {auth?.user && auth.user.role === 'buyer' && (
+                            <div onClick={(e) => e.preventDefault()}>  
+                              <StarButton 
+                                listingId={listing.id} 
+                                initialIsStarred={interestedListingIds.includes(listing.id)}
+                                className="bg-white bg-opacity-20 p-1 rounded-full hover:bg-opacity-30"
+                                isLoggedIn={!!auth?.user}
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
                       {listing.cash_flow && (
@@ -201,29 +221,12 @@ export default function PublicListings({ listings, filters, auth }: Props) {
           )}
           
           {/* Pagination */}
-          {listings.links && listings.links.length > 3 && (
-            <div className="mt-8 flex justify-center">
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                {listings.links.map((link: any, index: number) => {
-                  // Skip "prev" and "next" text links as we'll use icons
-                  if (index === 0 || index === listings.links.length - 1) return null;
-                  
-                  return (
-                    <a
-                      key={index}
-                      href={link.url}
-                      className={`${
-                        link.active
-                          ? 'z-10 bg-green-50 border-green-500 text-green-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                      } relative inline-flex items-center px-4 py-2 border text-sm font-medium`}
-                      dangerouslySetInnerHTML={{ __html: link.label }}
-                    />
-                  );
-                })}
-              </nav>
-            </div>
-          )}
+          <Pagination 
+            links={listings.links} 
+            currentPage={listings.current_page}
+            lastPage={listings.last_page} 
+            className="mt-8"
+          />
         </div>
       </div>
     </PublicLayout>

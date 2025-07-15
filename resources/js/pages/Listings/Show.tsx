@@ -1,6 +1,8 @@
-import { Head } from '@inertiajs/react';
-import { useState } from 'react';
+import { Head, router } from '@inertiajs/react';
+import { useState, useEffect } from 'react';
 import PublicLayout from '@/layouts/public-layout';
+import StarButton from '@/components/StarButton';
+import { toast } from 'react-toastify';
 
 interface Image {
   id: number;
@@ -40,14 +42,47 @@ interface Listing {
 
 interface Props {
   listing: Listing;
+  auth: {
+    user: {
+      id: number;
+      role: string;
+      name?: string;
+      email?: string;
+    } | null;
+  };
+  userInterested?: boolean;
+  interestedCount?: number;
 }
 
-export default function PublicListingDetail({ listing }: Props) {
+export default function PublicListingDetail({ listing, auth, userInterested = false, interestedCount = 0 }: Props) {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     listing.image_urls.findIndex(img => img.is_primary) >= 0
       ? listing.image_urls.findIndex(img => img.is_primary)
       : listing.image_urls.length > 0 ? 0 : null
   );
+  
+  // Form state - pre-populate with user data if available
+  const [formData, setFormData] = useState({
+    name: auth.user?.name || '',
+    email: auth.user?.email || '',
+    phone: '',
+    message: ''
+  });
+  
+  // Form errors
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Update form data if auth changes (e.g., user logs in)
+  useEffect(() => {
+    if (auth.user) {
+      setFormData(prevData => ({
+        ...prevData,
+        name: auth.user?.name || prevData.name,
+        email: auth.user?.email || prevData.email
+      }));
+    }
+  }, [auth.user]);
 
   const formatCurrency = (value: number | null) => {
     if (value === null) return 'N/A';
@@ -72,10 +107,83 @@ export default function PublicListingDetail({ listing }: Props) {
     );
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
+    
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        [name]: ''
+      }));
+    }
+  };
+  
   const handleContactForm = (e: React.FormEvent) => {
     e.preventDefault();
-    // This would be replaced with actual contact form submission logic
-    alert('Contact form submission would be processed here');
+    setErrors({});
+    setIsSubmitting(true);
+    
+    // Check if user is authenticated
+    if (!auth.user) {
+      // Show toast notification
+      toast.info('Please login or register to contact the seller');
+      
+      // Redirect to login page with a redirect back to this listing
+      router.visit('/login', { 
+        data: { 
+          redirect: `/listings/${listing.id}`,
+          role: 'buyer' // Default to buyer role for registration
+        }
+      });
+      setIsSubmitting(false);
+      return;
+    }
+    
+    // If user is authenticated but not a buyer, show a message
+    if (auth.user && auth.user.role !== 'buyer') {
+      toast.warning('Only buyers can contact sellers. Please switch to a buyer account.');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    // Validate form client-side
+    const validationErrors: Record<string, string> = {};
+    if (!formData.name.trim()) validationErrors.name = 'Name is required';
+    if (!formData.email.trim()) validationErrors.email = 'Email is required';
+    if (!formData.message.trim()) validationErrors.message = 'Message is required';
+    
+    // If there are validation errors, show them and return
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setIsSubmitting(false);
+      return;
+    }
+    
+    // Submit the form data via Inertia
+    router.post(route('listings.contact', listing.id), formData, {
+      onSuccess: () => {
+        toast.success('Your message has been sent to the seller!');
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          message: ''
+        });
+        setIsSubmitting(false);
+      },
+      onError: (errors) => {
+        console.error('Form submission errors:', errors);
+        setErrors(errors as Record<string, string>);
+        toast.error('Please fix the errors in the form.');
+        setIsSubmitting(false);
+      }
+    });
   };
 
   return (
@@ -92,8 +200,20 @@ export default function PublicListingDetail({ listing }: Props) {
                 <h1 className="text-2xl md:text-3xl font-bold">{listing.headline}</h1>
                 <p className="text-green-100 mt-1">{listing.city}, {listing.state}</p>
               </div>
-              <div className="mt-4 md:mt-0 text-right">
-                <div className="text-sm font-medium">Asking Price</div>
+              <div className="mt-4 md:mt-0 text-right flex flex-col items-end">
+                <div className="flex items-center mb-2">
+                  <div className="text-sm font-medium mr-3">Asking Price</div>
+                  {auth?.user && auth.user.role === 'buyer' && (
+                    <StarButton 
+                      listingId={listing.id} 
+                      initialIsStarred={userInterested}
+                      className="bg-white bg-opacity-20 p-1 rounded-full hover:bg-opacity-30"
+                      isLoggedIn={!!auth?.user}
+                      showCount={true}
+                      initialCount={interestedCount}
+                    />
+                  )}
+                </div>
                 <div className="text-2xl md:text-3xl font-bold">{formatCurrency(listing.asking_price)}</div>
                 {listing.cash_flow && (
                   <div className="text-green-100 text-sm">
@@ -312,9 +432,15 @@ export default function PublicListingDetail({ listing }: Props) {
                         <input
                           type="text"
                           id="name"
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm p-2"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleInputChange}
+                          className={`block w-full rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm p-2 ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                           required
                         />
+                        {errors.name && (
+                          <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                        )}
                       </div>
                       
                       <div className="mb-4">
@@ -322,9 +448,15 @@ export default function PublicListingDetail({ listing }: Props) {
                         <input
                           type="email"
                           id="email"
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm p-2"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          className={`block w-full rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm p-2 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                           required
                         />
+                        {errors.email && (
+                          <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                        )}
                       </div>
                       
                       <div className="mb-4">
@@ -332,6 +464,9 @@ export default function PublicListingDetail({ listing }: Props) {
                         <input
                           type="tel"
                           id="phone"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleInputChange}
                           className="block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm p-2"
                         />
                       </div>
@@ -340,18 +475,25 @@ export default function PublicListingDetail({ listing }: Props) {
                         <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
                         <textarea
                           id="message"
+                          name="message"
                           rows={4}
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm p-2"
+                          value={formData.message}
+                          onChange={handleInputChange}
+                          className={`block w-full rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm p-2 ${errors.message ? 'border-red-500' : 'border-gray-300'}`}
                           placeholder="I'm interested in learning more about this business opportunity..."
                           required
                         ></textarea>
+                        {errors.message && (
+                          <p className="mt-1 text-sm text-red-600">{errors.message}</p>
+                        )}
                       </div>
                       
                       <button
                         type="submit"
-                        className="w-full bg-green-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                        disabled={isSubmitting}
+                        className={`w-full bg-green-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-green-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500`}
                       >
-                        Contact Seller
+                        {isSubmitting ? 'Sending...' : 'Contact Seller'}
                       </button>
                     </form>
                     
