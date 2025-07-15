@@ -87,7 +87,7 @@ export function NavMain() {
             title: 'Add Listing',
             href: '/seller/listings/create',
             icon: PlusCircle,
-            roles: ['seller', 'admin'],
+            roles: ['seller'],
           },
           {
             title: 'Listing Page',
@@ -102,14 +102,8 @@ export function NavMain() {
             roles: ['seller', 'admin'],
           },
           {
-            title: 'Browse Listings',
-            href: '/seller/browse',
-            icon: Eye,
-            roles: ['seller', 'admin'],
-          },
-          {
             title: 'Account',
-            href: '/seller/account',
+            href: '/settings/profile',
             icon: User,
             roles: ['seller', 'admin'],
           },
@@ -129,14 +123,8 @@ export function NavMain() {
           },
           {
             title: 'All Listings',
-            href: '/buyer/listings',
+            href: '/listings',
             icon: ClipboardList,
-            roles: ['buyer'],
-          },
-          {
-            title: 'Recently Viewed',
-            href: '/buyer/recent',
-            icon: Eye,
             roles: ['buyer'],
           },
           {
@@ -147,7 +135,7 @@ export function NavMain() {
           },
           {
             title: 'Account',
-            href: '/buyer/account',
+            href: '/settings/profile',
             icon: User,
             roles: ['buyer'],
           },

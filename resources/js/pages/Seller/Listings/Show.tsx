@@ -1,6 +1,13 @@
 import { Head, Link } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 
+interface Image {
+  id: number;
+  path: string;
+  is_primary: boolean;
+  url: string;
+}
+
 interface Listing {
   id: number;
   headline: string;
@@ -40,6 +47,7 @@ interface Listing {
   status: 'draft' | 'published' | 'sold' | 'inactive';
   created_at: string;
   updated_at: string;
+  image_urls?: Image[];
 }
 
 interface Props {
@@ -105,6 +113,15 @@ export default function ShowListing({ listing }: Props) {
                   >
                     Edit
                   </Link>
+                  {listing.status === 'published' && (
+                    <Link
+                      href={route('listings.show', listing.id)}
+                      className="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring focus:ring-green-300 disabled:opacity-25 transition"
+                      target="_blank"
+                    >
+                      Preview Listing
+                    </Link>
+                  )}
                   <Link
                     href={route('seller.listings.index')}
                     className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-25 transition"
@@ -114,9 +131,43 @@ export default function ShowListing({ listing }: Props) {
                 </div>
               </div>
 
-              <div className="mb-6">
+              <div className="mb-6 flex items-center gap-3">
                 {getStatusBadge(listing.status)}
+                <span className="text-gray-500">•</span>
+                <span className="text-gray-700">{formatCurrency(listing.asking_price)}</span>
               </div>
+              
+              {/* Image Gallery */}
+              {listing.image_urls && listing.image_urls.length > 0 && (
+                <div className="mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {/* Primary image (larger) */}
+                    {listing.image_urls.find(img => img.is_primary) && (
+                      <div className="md:col-span-2 row-span-2">
+                        <img 
+                          src={listing.image_urls.find(img => img.is_primary)?.url} 
+                          alt={listing.headline} 
+                          className="h-64 w-full object-cover rounded-lg shadow-md"
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Other images */}
+                    {listing.image_urls
+                      .filter(img => !img.is_primary)
+                      .slice(0, 5)
+                      .map(image => (
+                        <div key={image.id} className="h-32">
+                          <img 
+                            src={image.url} 
+                            alt={listing.headline} 
+                            className="h-full w-full object-cover rounded-lg shadow-sm"
+                          />
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="md:col-span-2 space-y-6">

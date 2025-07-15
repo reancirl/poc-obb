@@ -162,7 +162,12 @@ export default function ListingIndex({ listings }: Props) {
                       <tr key={listing.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
-                            {listing.headline}
+                            <Link
+                              href={route('seller.listings.show', listing.id)}
+                              className="text-blue-600 hover:text-blue-900"
+                            >
+                              {listing.headline}
+                            </Link>
                           </div>
                           <div className="text-sm text-gray-500">
                             {listing.industry}

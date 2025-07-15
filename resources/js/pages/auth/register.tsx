@@ -4,17 +4,13 @@ import { FormEventHandler } from 'react';
 
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import AuthLayout from '@/layouts/auth-layout';
 
 type RegisterForm = {
     name: string;
     email: string;
     password: string;
     password_confirmation: string;
-    role: 'buyer' | 'seller' | 'admin';
+    role: 'buyer' | 'seller';
 };
 
 export default function Register() {
@@ -34,104 +30,125 @@ export default function Register() {
     };
 
     return (
-        <AuthLayout title="Create an account" description="Enter your details below to create your account">
+        <>
             <Head title="Register" />
-            <form className="flex flex-col gap-6" onSubmit={submit}>
-                <div className="grid gap-6">
-                    <div className="grid gap-2">
-                        <Label htmlFor="name">Name</Label>
-                        <Input
-                            id="name"
-                            type="text"
-                            required
-                            autoFocus
-                            tabIndex={1}
-                            autoComplete="name"
-                            value={data.name}
-                            onChange={(e) => setData('name', e.target.value)}
-                            disabled={processing}
-                            placeholder="Full name"
-                        />
-                        <InputError message={errors.name} className="mt-1" />
-                    </div>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="role">Register as</Label>
-                        <select
-                            id="role"
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            value={data.role}
-                            onChange={(e) => setData('role', e.target.value as 'buyer' | 'seller' | 'admin')}
+            <div className="flex flex-col items-center justify-center min-h-screen bg-white px-4">
+                <h1 className="text-2xl md:text-3xl font-semibold mb-2 text-center">Create an account</h1>
+                <p className="text-gray-500 mb-6 text-center">
+                    Enter your details below to create your account
+                </p>
+
+                <form className="w-full max-w-md" onSubmit={submit}>
+                    <div className="space-y-6">
+                        <div>
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                                Name
+                            </label>
+                            <input
+                                id="name"
+                                type="text"
+                                required
+                                autoFocus
+                                autoComplete="name"
+                                value={data.name}
+                                onChange={(e) => setData('name', e.target.value)}
+                                disabled={processing}
+                                placeholder="Full name"
+                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
+                            />
+                            <InputError message={errors.name} className="mt-1" />
+                        </div>
+
+                        <div>
+                            <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+                                Register as
+                            </label>
+                            <select
+                                id="role"
+                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
+                                value={data.role}
+                                onChange={(e) => setData('role', e.target.value as 'buyer' | 'seller')}
+                                disabled={processing}
+                            >
+                                <option value="buyer">Buyer</option>
+                                <option value="seller">Seller</option>
+                            </select>
+                            <InputError message={errors.role} className="mt-1" />
+                        </div>
+
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                                Email address
+                            </label>
+                            <input
+                                id="email"
+                                type="email"
+                                required
+                                autoComplete="email"
+                                value={data.email}
+                                onChange={(e) => setData('email', e.target.value)}
+                                disabled={processing}
+                                placeholder="email@example.com"
+                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
+                            />
+                            <InputError message={errors.email} className="mt-1" />
+                        </div>
+
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                                Password
+                            </label>
+                            <input
+                                id="password"
+                                type="password"
+                                required
+                                autoComplete="new-password"
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                                disabled={processing}
+                                placeholder="Password"
+                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
+                            />
+                            <InputError message={errors.password} className="mt-1" />
+                        </div>
+
+                        <div>
+                            <label htmlFor="password_confirmation" className="block text-sm font-medium text-gray-700">
+                                Confirm password
+                            </label>
+                            <input
+                                id="password_confirmation"
+                                type="password"
+                                required
+                                autoComplete="new-password"
+                                value={data.password_confirmation}
+                                onChange={(e) => setData('password_confirmation', e.target.value)}
+                                disabled={processing}
+                                placeholder="Confirm password"
+                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
+                            />
+                            <InputError message={errors.password_confirmation} className="mt-1" />
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg text-sm font-medium flex justify-center items-center"
                             disabled={processing}
                         >
-                            <option value="buyer">Buyer</option>
-                            <option value="seller">Seller</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                        <InputError message={errors.role} className="mt-1" />
+                            {processing && <LoaderCircle className="animate-spin w-4 h-4 mr-2" />}
+                            Create account
+                        </button>
                     </div>
+                </form>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="email">Email address</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            required
-                            tabIndex={2}
-                            autoComplete="email"
-                            value={data.email}
-                            onChange={(e) => setData('email', e.target.value)}
-                            disabled={processing}
-                            placeholder="email@example.com"
-                        />
-                        <InputError message={errors.email} />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input
-                            id="password"
-                            type="password"
-                            required
-                            tabIndex={3}
-                            autoComplete="new-password"
-                            value={data.password}
-                            onChange={(e) => setData('password', e.target.value)}
-                            disabled={processing}
-                            placeholder="Password"
-                        />
-                        <InputError message={errors.password} />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="password_confirmation">Confirm password</Label>
-                        <Input
-                            id="password_confirmation"
-                            type="password"
-                            required
-                            tabIndex={4}
-                            autoComplete="new-password"
-                            value={data.password_confirmation}
-                            onChange={(e) => setData('password_confirmation', e.target.value)}
-                            disabled={processing}
-                            placeholder="Confirm password"
-                        />
-                        <InputError message={errors.password_confirmation} />
-                    </div>
-
-                    <Button type="submit" className="mt-2 w-full" tabIndex={5} disabled={processing}>
-                        {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                        Create account
-                    </Button>
-                </div>
-
-                <div className="text-center text-sm text-muted-foreground">
+                <p className="mt-6 text-sm text-gray-700">
                     Already have an account?{' '}
-                    <TextLink href={route('login')} tabIndex={6}>
+                    <TextLink href={route('welcome')} className="text-green-600 underline">
                         Log in
                     </TextLink>
-                </div>
-            </form>
-        </AuthLayout>
+                </p>
+            </div>
+        </>
     );
 }

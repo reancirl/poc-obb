@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
         
         // Create sample listings
         $this->call([
-            ListingsTableSeeder::class,
+            // ListingsTableSeeder::class,
         ]);
         
         // You can uncomment and use factories for testing
