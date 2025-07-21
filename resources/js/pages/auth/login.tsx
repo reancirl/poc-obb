@@ -131,7 +131,7 @@ export default function Login({ status, canResetPassword, role: propRole }: Logi
                   className={`mt-1 block w-full rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 ${
                     isAdmin 
                       ? 'bg-slate-700/50 border border-slate-600 text-white focus:ring-red-500 focus:border-red-500' 
-                      : 'border border-gray-300 focus:ring-black'
+                      : 'border border-gray-300 focus:ring-[#010079] focus:border-[#010079]'
                   }`}
                 />
                 <InputError message={errors.email} className="mt-1" />
@@ -161,7 +161,7 @@ export default function Login({ status, canResetPassword, role: propRole }: Logi
                   className={`mt-1 block w-full rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 ${
                     isAdmin 
                       ? 'bg-slate-700/50 border border-slate-600 text-white focus:ring-red-500 focus:border-red-500' 
-                      : 'border border-gray-300 focus:ring-black'
+                      : 'border border-gray-300 focus:ring-[#010079] focus:border-[#010079]'
                   }`}
                 />
                 <InputError message={errors.password} className="mt-1" />
@@ -172,9 +172,8 @@ export default function Login({ status, canResetPassword, role: propRole }: Logi
                   id="remember"
                   checked={data.remember}
                   onClick={() => setData('remember', !data.remember)}
-                  className={`h-4 w-4 ${
-                    isAdmin ? 'text-red-600' : 'text-black'
-                  }`}
+                  className={`h-4 w-4`}
+                  style={!isAdmin ? { accentColor: '#010079' } : { accentColor: '#dc2626' }}
                 />
                 <label htmlFor="remember" className={`ml-2 text-sm ${
                   isAdmin ? 'text-gray-300' : 'text-gray-700'
@@ -188,8 +187,9 @@ export default function Login({ status, canResetPassword, role: propRole }: Logi
                 className={`w-full py-3 rounded-lg text-sm font-medium flex justify-center items-center transition-colors ${
                   isAdmin 
                     ? 'bg-red-600 hover:bg-red-700 text-white' 
-                    : 'bg-green-600 hover:bg-green-700 text-white'
+                    : 'text-white hover:opacity-90'
                 }`}
+                style={!isAdmin ? { backgroundColor: '#010079' } : undefined}
                 disabled={processing}
               >
                 {processing && <LoaderCircle className="animate-spin w-4 h-4 mr-2" />}
@@ -201,16 +201,15 @@ export default function Login({ status, canResetPassword, role: propRole }: Logi
           {!isAdmin && (
             <p className="mt-6 text-sm text-gray-700 text-center">
               Don't have an account?{' '}
-              <TextLink href={route('register')} className="text-green-600 underline">
+              <TextLink href={route('register')} className="underline" style={{ color: '#D5AD36' }}>
                 Sign up
               </TextLink>
             </p>
           )}
 
           {status && (
-            <div className={`mt-4 text-center text-sm font-medium ${
-              isAdmin ? 'text-red-400' : 'text-green-600'
-            }`}>
+            <div className={`mt-4 text-center text-sm font-medium`}
+                 style={isAdmin ? { color: '#fca5a5' } : { color: '#D5AD36' }}>
               {status}
             </div>
           )}

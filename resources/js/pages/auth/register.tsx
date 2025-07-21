@@ -57,7 +57,7 @@ export default function Register() {
                                 onChange={(e) => setData('name', e.target.value)}
                                 disabled={processing}
                                 placeholder="Full name"
-                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
+                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#010079] focus:border-[#010079]"
                             />
                             <InputError message={errors.name} className="mt-1" />
                         </div>
@@ -77,7 +77,7 @@ export default function Register() {
                                 onChange={(e) => setData('email', e.target.value)}
                                 disabled={processing}
                                 placeholder="email@example.com"
-                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
+                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#010079] focus:border-[#010079]"
                             />
                             <InputError message={errors.email} className="mt-1" />
                         </div>
@@ -95,7 +95,7 @@ export default function Register() {
                                 onChange={(e) => setData('phone', e.target.value)}
                                 disabled={processing}
                                 placeholder="+1 (555) 123-4567"
-                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
+                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#010079] focus:border-[#010079]"
                             />
                             <InputError message={errors.phone} className="mt-1" />
                         </div>
@@ -113,7 +113,7 @@ export default function Register() {
                                 onChange={(e) => setData('password', e.target.value)}
                                 disabled={processing}
                                 placeholder="Password"
-                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
+                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#010079] focus:border-[#010079]"
                             />
                             <InputError message={errors.password} className="mt-1" />
                         </div>
@@ -131,14 +131,15 @@ export default function Register() {
                                 onChange={(e) => setData('password_confirmation', e.target.value)}
                                 disabled={processing}
                                 placeholder="Confirm password"
-                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
+                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#010079] focus:border-[#010079]"
                             />
                             <InputError message={errors.password_confirmation} className="mt-1" />
                         </div>
 
                         <button
                             type="submit"
-                            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg text-sm font-medium flex justify-center items-center"
+                            className="w-full text-white py-3 rounded-lg text-sm font-medium flex justify-center items-center hover:opacity-90"
+                            style={{ backgroundColor: '#010079' }}
                             disabled={processing}
                         >
                             {processing && <LoaderCircle className="animate-spin w-4 h-4 mr-2" />}
@@ -152,7 +153,7 @@ export default function Register() {
 
                 <p className="mt-6 text-sm text-gray-700">
                     Already have an account?{' '}
-                    <TextLink href={route('login')} className="text-green-600 underline">
+                    <TextLink href={route('login')} className="underline" style={{ color: '#D5AD36' }}>
                         Log in
                     </TextLink>
                 </p>

@@ -10,17 +10,14 @@ import {
 } from '@/components/ui/select';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { type User } from '@/types';
+import { type FormFieldValue, type FormData } from '@/components/ListingForm';
 
-// Type for form field values
-export type FormFieldValue = string | number | boolean | File | File[] | null | undefined;
-export type FormData = Record<string, FormFieldValue>;
-
-interface ListingFormProps {
+interface BasicInfoStepProps {
   data: FormData;
   setData: (field: keyof FormData, value: FormFieldValue) => void;
   errors: Partial<Record<keyof FormData, string>>;
   processing: boolean;
-  onCancel: () => void;
+  onNext: () => void;
   listingTypes: string[];
   industries: string[];
   locationConfidentialityOptions: string[];
@@ -28,18 +25,18 @@ interface ListingFormProps {
   user: User;
 }
 
-export default function ListingForm({
+export default function BasicInfoStep({
   data,
   setData,
   errors,
   processing,
-  onCancel,
+  onNext,
   listingTypes,
   industries,
   locationConfidentialityOptions,
   realEstateTypes,
   user,
-}: ListingFormProps) {
+}: BasicInfoStepProps) {
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -47,7 +44,6 @@ export default function ListingForm({
     const { name, type } = target;
     const value = type === 'checkbox' ? target.checked : target.value;
 
-    // Handle different field types
     let processedValue: FormFieldValue = value;
     
     if (type === 'number') {
@@ -55,7 +51,6 @@ export default function ListingForm({
     } else if (type === 'checkbox') {
       processedValue = Boolean(value);
     } else if (name === 'ebitda' || name === 'rent' || name === 'inventory') {
-      // Ensure these fields are always strings
       processedValue = String(value || '');
     }
     
@@ -65,7 +60,6 @@ export default function ListingForm({
   const handleSelect = (name: keyof FormData) => (value: string) => {
     let processedValue: FormFieldValue = value;
     
-    // Special handling for specific fields
     if (name === 'ebitda' || name === 'rent' || name === 'inventory') {
       processedValue = String(value || '');
     } else if (name === 'seller_financing') {
@@ -75,11 +69,24 @@ export default function ListingForm({
     setData(name, processedValue);
   };
 
+  const handleNext = () => {
+    // Basic validation before proceeding
+    const requiredFields = ['headline', 'industry', 'listing_type', 'location_name', 'city', 'state', 'zip', 'email', 'phone_number'];
+    const missingFields = requiredFields.filter(field => !data[field]);
+    
+    if (missingFields.length > 0) {
+      alert('Please fill in all required fields before continuing.');
+      return;
+    }
+    
+    onNext();
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Basic Information */}
       <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-lg font-medium mb-6">Basic Information</h2>
+        <h3 className="text-lg font-medium mb-6">Basic Information</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Headline */}
           <div className="space-y-2">
@@ -90,6 +97,7 @@ export default function ListingForm({
               value={(data.headline as string) || ''}
               onChange={handleChange}
               required
+              placeholder="Enter a compelling headline for your listing"
             />
             {errors.headline && (
               <p className="text-sm text-red-500">{errors.headline}</p>
@@ -135,27 +143,26 @@ export default function ListingForm({
             )}
           </div>
 
-          {/* Status */}
+          {/* Real Estate Type */}
           <div className="space-y-2">
-            <Label htmlFor="status">Status *</Label>
+            <Label htmlFor="real_estate_type">Real Estate Type</Label>
             <Select
-              value={String(data.status || '')}
-              onValueChange={handleSelect('status')}
-              required
+              value={String(data.real_estate_type || '')}
+              onValueChange={handleSelect('real_estate_type')}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select status" />
+                <SelectValue placeholder="Select real estate type" />
               </SelectTrigger>
               <SelectContent>
-                {['draft', 'published', 'sold', 'inactive'].map((st) => (
-                  <SelectItem key={st} value={st}>
-                    {st.charAt(0).toUpperCase() + st.slice(1)}
+                {realEstateTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {errors.status && (
-              <p className="text-sm text-red-500">{errors.status}</p>
+            {errors.real_estate_type && (
+              <p className="text-sm text-red-500">{errors.real_estate_type}</p>
             )}
           </div>
         </div>
@@ -163,20 +170,20 @@ export default function ListingForm({
 
       {/* Location Information */}
       <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-lg font-medium mb-6">Location Information</h2>
+        <h3 className="text-lg font-medium mb-6">Location Information</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {['location_name', 'address', 'city', 'state', 'zip', 'county'].map((field) => (
             <div key={field} className="space-y-2">
               <Label htmlFor={field}>
                 {field.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
-                {field !== 'county' ? ' *' : ''}
+                {field !== 'county' && field !== 'address' ? ' *' : ''}
               </Label>
               <Input
                 id={field}
                 name={field}
                 value={String(data[field] || '')}
                 onChange={handleChange}
-                required={field !== 'county'}
+                required={field !== 'county' && field !== 'address'}
               />
               {errors[field as keyof FormData] && (
                 <p className="text-sm text-red-500">{errors[field as keyof FormData]}</p>
@@ -184,21 +191,20 @@ export default function ListingForm({
             </div>
           ))}
 
-          {/* Confidentiality */}
+          {/* Location Confidentiality */}
           <div className="space-y-2">
-            <Label htmlFor="location_confidentiality">Location Confidentiality *</Label>
+            <Label htmlFor="location_confidentiality">Location Confidentiality</Label>
             <Select
               value={String(data.location_confidentiality || '')}
               onValueChange={handleSelect('location_confidentiality')}
-              required
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select confidentiality" />
+                <SelectValue placeholder="Select confidentiality level" />
               </SelectTrigger>
               <SelectContent>
-                {locationConfidentialityOptions.map((opt) => (
-                  <SelectItem key={opt} value={opt}>
-                    {opt}
+                {locationConfidentialityOptions.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -212,8 +218,7 @@ export default function ListingForm({
 
       {/* Contact Information */}
       <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-lg font-medium mb-6">Contact Information</h2>
-
+        <h3 className="text-lg font-medium mb-6">Contact Information</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="email">Email *</Label>
@@ -248,6 +253,16 @@ export default function ListingForm({
         </div>
       </div>
 
+      {/* Navigation */}
+      <div className="flex justify-end pt-6">
+        <button
+          onClick={handleNext}
+          disabled={processing}
+          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+        >
+          Continue to Choose Plan
+        </button>
       </div>
+    </div>
   );
 }

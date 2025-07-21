@@ -192,13 +192,13 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
       
       <div className="">
         {/* Hero section with business type and location */}
-        <div className="bg-green-700 text-white py-4">
+        <div className="text-white py-4" style={{ backgroundColor: '#010079' }}>
           <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
               <div>
                 <div className="text-sm font-medium mb-1">{listing.industry} • {listing.listing_type}</div>
                 <h1 className="text-2xl md:text-3xl font-bold">{listing.headline}</h1>
-                <p className="text-green-100 mt-1">{listing.city}, {listing.state}</p>
+                <p className="text-blue-100 mt-1">{listing.city}, {listing.state}</p>
               </div>
               <div className="mt-4 md:mt-0 text-right flex flex-col items-end">
                 <div className="flex items-center mb-2">
@@ -216,7 +216,7 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
                 </div>
                 <div className="text-2xl md:text-3xl font-bold">{formatCurrency(listing.asking_price)}</div>
                 {listing.cash_flow && (
-                  <div className="text-green-100 text-sm">
+                  <div className="text-blue-100 text-sm">
                     Cash Flow: {formatCurrency(listing.cash_flow)}/year
                   </div>
                 )}
@@ -231,7 +231,7 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
             <nav className="flex" aria-label="Breadcrumb">
               <ol className="inline-flex items-center space-x-1 md:space-x-3">
                 <li className="inline-flex items-center">
-                  <a href="/" className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-green-600">
+                  <a href="/" className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-[#D5AD36]">
                     Home
                   </a>
                 </li>
@@ -240,7 +240,7 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
                     <svg className="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                       <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
                     </svg>
-                    <a href="/listings" className="ml-1 text-sm font-medium text-gray-700 hover:text-green-600 md:ml-2">
+                    <a href="/listings" className="ml-1 text-sm font-medium text-gray-700 hover:text-[#D5AD36] md:ml-2">
                       Listings
                     </a>
                   </div>
@@ -271,7 +271,7 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
                   <span>•</span>
                   <span>{listing.city}, {listing.state}</span>
                 </div>
-                <div className="mt-2 text-2xl font-bold text-green-600">
+                <div className="mt-2 text-2xl font-bold" style={{ color: '#D5AD36' }}>
                   {formatCurrency(listing.asking_price)}
                 </div>
               </div>
@@ -303,7 +303,7 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
                           {listing.image_urls.map((image, index) => (
                             <div 
                               key={image.id} 
-                              className={`flex-shrink-0 cursor-pointer w-24 h-24 mx-1 rounded-md overflow-hidden border-2 ${selectedImageIndex === index ? 'border-green-500' : 'border-transparent'}`}
+                              className={`flex-shrink-0 cursor-pointer w-24 h-24 mx-1 rounded-md overflow-hidden border-2 ${selectedImageIndex === index ? 'border-[#010079]' : 'border-transparent'}`}
                               onClick={() => setSelectedImageIndex(index)}
                             >
                               <img 
@@ -435,7 +435,7 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
                           name="name"
                           value={formData.name}
                           onChange={handleInputChange}
-                          className={`block w-full rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm p-2 ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+                          className={`block w-full rounded-md shadow-sm focus:ring-[#010079] focus:border-[#010079] sm:text-sm p-2 ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                           required
                         />
                         {errors.name && (
@@ -451,7 +451,7 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
                           name="email"
                           value={formData.email}
                           onChange={handleInputChange}
-                          className={`block w-full rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm p-2 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+                          className={`block w-full rounded-md shadow-sm focus:ring-[#010079] focus:border-[#010079] sm:text-sm p-2 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                           required
                         />
                         {errors.email && (
@@ -467,7 +467,7 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
                           name="phone"
                           value={formData.phone}
                           onChange={handleInputChange}
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm p-2"
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#010079] focus:border-[#010079] sm:text-sm p-2"
                         />
                       </div>
                       
@@ -479,7 +479,7 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
                           rows={4}
                           value={formData.message}
                           onChange={handleInputChange}
-                          className={`block w-full rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm p-2 ${errors.message ? 'border-red-500' : 'border-gray-300'}`}
+                          className={`block w-full rounded-md shadow-sm focus:ring-[#010079] focus:border-[#010079] sm:text-sm p-2 ${errors.message ? 'border-red-500' : 'border-gray-300'}`}
                           placeholder="I'm interested in learning more about this business opportunity..."
                           required
                         ></textarea>
@@ -491,7 +491,8 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className={`w-full bg-green-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-green-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500`}
+                        className={`w-full border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-90'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#010079]`}
+                        style={{ backgroundColor: '#010079' }}
                       >
                         {isSubmitting ? 'Sending...' : 'Contact Seller'}
                       </button>
@@ -515,7 +516,7 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
               <div className="mt-8">
                 <a
                   href="/listings"
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#010079]"
                 >
                   <svg className="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
