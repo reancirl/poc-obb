@@ -20,13 +20,13 @@ class AuthenticatedSessionController extends Controller
     {
         $requestedRole = $request->query('role');
 
-        if (!$requestedRole) {
-            return redirect()->route('welcome');
-        }   
+        // Default to member role if no role specified
+        $role = $requestedRole ?: 'member';
 
         return Inertia::render('auth/login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => $request->session()->get('status'),
+            'role' => $role, // Pass role to frontend
         ]);
     }
 
@@ -44,7 +44,8 @@ class AuthenticatedSessionController extends Controller
         
         return match($user->role) {
             'admin' => redirect()->intended(route('admin.dashboard', absolute: false)),
-            'seller' => redirect()->intended(route('seller.dashboard', absolute: false)),
+            'member' => redirect()->intended(route('member.dashboard', absolute: false)),
+            'seller' => redirect()->intended(route('member.dashboard', absolute: false)), // Legacy support
             default => redirect()->intended(route('dashboard', absolute: false)),
         };
     }

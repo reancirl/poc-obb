@@ -82,62 +82,48 @@ export function NavMain() {
             roles: ['admin'],
           },
         
-          // Seller only items
+          // Member items (unified buying and selling)
           {
             title: 'Add Listing',
-            href: '/seller/listings/create',
+            href: '/member/listings/create',
             icon: PlusCircle,
-            roles: ['seller'],
+            roles: ['member'],
           },
           {
-            title: 'Listing Page',
-            href: '/seller/listings',
+            title: 'My Listings',
+            href: '/member/listings',
             icon: ClipboardList,
-            roles: ['seller'],
+            roles: ['member'],
+          },
+          {
+            title: 'Interested Listings',
+            href: '/member/interested',
+            icon: Heart,
+            roles: ['member'],
+          },
+          {
+            title: 'All Listings',
+            href: '/listings',
+            icon: Eye,
+            roles: ['member'],
           },
           {
             title: 'Message Center',
             href: '/messages',
             icon: MessageSquare,
-            roles: ['seller', 'buyer'],
+            roles: ['member'],
           },
           {
             title: 'Account',
             href: '/settings/profile',
             icon: User,
-            roles: ['seller', 'admin'],
+            roles: ['member', 'admin'],
           },
           {
             title: 'Feedback',
-            href: '/seller/feedback',
+            href: '/member/feedback',
             icon: Star,
-            roles: ['seller', 'admin'],
-          },
-        
-          // Buyer only items
-          {
-            title: 'Interested Listings',
-            href: '/buyer/interested',
-            icon: Heart,
-            roles: ['buyer'],
-          },
-          {
-            title: 'All Listings',
-            href: '/listings',
-            icon: ClipboardList,
-            roles: ['buyer'],
-          },
-          {
-            title: 'Account',
-            href: '/settings/profile',
-            icon: User,
-            roles: ['buyer'],
-          },
-          {
-            title: 'Feedback',
-            href: '/buyer/feedback',
-            icon: Star,
-            roles: ['buyer'],
+            roles: ['member', 'admin'],
           },
     ];
 

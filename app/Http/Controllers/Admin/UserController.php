@@ -73,7 +73,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', Rules\Password::defaults()],
-            'role' => 'required|in:buyer,seller,admin',
+            'role' => 'required|in:member,admin',
         ]);
 
         User::create([
@@ -121,7 +121,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => ['nullable', Rules\Password::defaults()],
-            'role' => 'required|in:buyer,seller,admin',
+            'role' => 'required|in:member,admin',
         ]);
 
         $user->update([

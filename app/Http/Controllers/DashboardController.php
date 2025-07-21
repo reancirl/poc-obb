@@ -19,8 +19,11 @@ class DashboardController extends Controller
         // Redirect based on user role
         return match($user->role) {
             'admin' => $this->admin(request()),
-            'seller' => $this->seller(request()),
-            default => $this->buyer(request()),
+            'member' => $this->member(request()),
+            // Legacy support for existing buyer/seller roles
+            'seller' => $this->member(request()),
+            'buyer' => $this->member(request()),
+            default => $this->member(request()),
         };
     }
     
@@ -36,21 +39,29 @@ class DashboardController extends Controller
     
     /**
      * Display the seller dashboard.
+     * @deprecated Use member() instead
      */
     public function seller(Request $request): Response
     {
-        return Inertia::render('Seller/Dashboard', [
+        return $this->member($request);
+    }
+    
+    /**
+     * Display the member dashboard (unified buyer/seller).
+     */
+    public function member(Request $request): Response
+    {
+        return Inertia::render('Member/Dashboard', [
             'user' => $request->user()
         ]);
     }
     
     /**
      * Display the buyer dashboard.
+     * @deprecated Use member() instead
      */
     public function buyer(Request $request): Response
     {
-        return Inertia::render('Buyer/Dashboard', [
-            'user' => $request->user()
-        ]);
+        return $this->member($request);
     }
 }

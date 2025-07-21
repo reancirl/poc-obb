@@ -8,6 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { SearchableSelect } from '@/components/ui/searchable-select';
+import { type User } from '@/types';
 
 // Type for form field values
 export type FormFieldValue = string | number | boolean | File | File[] | null | undefined;
@@ -23,6 +25,7 @@ interface ListingFormProps {
   industries: string[];
   locationConfidentialityOptions: string[];
   realEstateTypes: string[];
+  user: User;
 }
 
 export default function ListingForm({
@@ -35,6 +38,7 @@ export default function ListingForm({
   industries,
   locationConfidentialityOptions,
   realEstateTypes,
+  user,
 }: ListingFormProps) {
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -95,22 +99,13 @@ export default function ListingForm({
           {/* Industry */}
           <div className="space-y-2">
             <Label htmlFor="industry">Industry *</Label>
-            <Select
+            <SearchableSelect
+              options={industries}
               value={String(data.industry || '')}
-              onValueChange={handleSelect('industry')}
+              onChange={handleSelect('industry')}
+              placeholder="Search and select industry..."
               required
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select industry" />
-              </SelectTrigger>
-              <SelectContent>
-                {industries.map((industry) => (
-                  <SelectItem key={industry} value={industry}>
-                    {industry}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            />
             {errors.industry && (
               <p className="text-sm text-red-500">{errors.industry}</p>
             )}
@@ -218,6 +213,7 @@ export default function ListingForm({
       {/* Contact Information */}
       <div className="bg-white shadow rounded-lg p-6">
         <h2 className="text-lg font-medium mb-6">Contact Information</h2>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="email">Email *</Label>
@@ -225,9 +221,10 @@ export default function ListingForm({
               id="email"
               name="email"
               type="email"
-              value={String(data.email || '')}
+              value={String(data.email || user.email || '')}
               onChange={handleChange}
               required
+              placeholder={user.email}
             />
             {errors.email && (
               <p className="text-sm text-red-500">{errors.email}</p>
@@ -239,9 +236,10 @@ export default function ListingForm({
               id="phone_number"
               name="phone_number"
               type="tel"
-              value={String(data.phone_number || '')}
+              value={String(data.phone_number || user.phone || '')}
               onChange={handleChange}
               required
+              placeholder={user.phone || 'Enter phone number'}
             />
             {errors.phone_number && (
               <p className="text-sm text-red-500">{errors.phone_number}</p>

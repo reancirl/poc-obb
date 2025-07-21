@@ -8,18 +8,20 @@ import TextLink from '@/components/text-link';
 type RegisterForm = {
     name: string;
     email: string;
+    phone: string;
     password: string;
     password_confirmation: string;
-    role: 'buyer' | 'seller';
+    role: 'member';
 };
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm<Required<RegisterForm>>({
         name: '',
         email: '',
+        phone: '',
         password: '',
         password_confirmation: '',
-        role: 'buyer',
+        role: 'member',
     });
 
     const submit: FormEventHandler = (e) => {
@@ -33,7 +35,7 @@ export default function Register() {
         <>
             <Head title="Register" />
 
-            <div className="flex flex-col items-center justify-center min-h-screen bg-white px-4">
+            <div className="flex flex-col items-center justify-center min-h-screen bg-white px-4 py-5">
                 <h1 className="text-2xl md:text-3xl font-semibold mb-2 text-center">Create an account</h1>
                 <p className="text-gray-500 mb-6 text-center">
                     Enter your details below to create your account
@@ -60,22 +62,7 @@ export default function Register() {
                             <InputError message={errors.name} className="mt-1" />
                         </div>
 
-                        <div>
-                            <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-                                Register as
-                            </label>
-                            <select
-                                id="role"
-                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
-                                value={data.role}
-                                onChange={(e) => setData('role', e.target.value as 'buyer' | 'seller')}
-                                disabled={processing}
-                            >
-                                <option value="buyer">Buyer</option>
-                                <option value="seller">Seller</option>
-                            </select>
-                            <InputError message={errors.role} className="mt-1" />
-                        </div>
+
 
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -93,6 +80,24 @@ export default function Register() {
                                 className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
                             />
                             <InputError message={errors.email} className="mt-1" />
+                        </div>
+
+                        <div>
+                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                                Phone number
+                            </label>
+                            <input
+                                id="phone"
+                                type="tel"
+                                required
+                                autoComplete="tel"
+                                value={data.phone}
+                                onChange={(e) => setData('phone', e.target.value)}
+                                disabled={processing}
+                                placeholder="+1 (555) 123-4567"
+                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
+                            />
+                            <InputError message={errors.phone} className="mt-1" />
                         </div>
 
                         <div>
@@ -137,16 +142,23 @@ export default function Register() {
                             disabled={processing}
                         >
                             {processing && <LoaderCircle className="animate-spin w-4 h-4 mr-2" />}
-                            Create account
+                            Get started For Free
                         </button>
+                        <p className="text-xs text-gray-500 text-center mt-2">
+                            No credit card required
+                        </p>
                     </div>
                 </form>
 
                 <p className="mt-6 text-sm text-gray-700">
                     Already have an account?{' '}
-                    <TextLink href={route('welcome')} className="text-green-600 underline">
+                    <TextLink href={route('login')} className="text-green-600 underline">
                         Log in
                     </TextLink>
+                </p>
+                
+                <p className="mt-4 text-xs text-gray-400 text-center">
+                    Free accounts can get up to 3 listings
                 </p>
             </div>
         </>

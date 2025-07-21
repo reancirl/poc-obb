@@ -29,7 +29,8 @@ class RedirectIfAuthenticated
                 // Redirect based on user role
                 return match($user->role) {
                     'admin' => redirect()->intended(route('admin.dashboard')),
-                    'seller' => redirect()->intended(route('seller.dashboard')),
+                    'member' => redirect()->intended(route('member.dashboard')),
+                    'seller' => redirect()->intended(route('member.dashboard')), // Legacy support
                     default => redirect()->intended(route('dashboard')),
                 };
             }

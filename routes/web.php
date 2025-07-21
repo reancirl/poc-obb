@@ -7,9 +7,10 @@ use Inertia\Inertia;
 // Public routes
 Route::get('/', [\App\Http\Controllers\PublicListingController::class, 'index'])->name('home');
 
-Route::get('/before-login', function () {
-    return Inertia::render('welcome');
-})->name('welcome');
+// Hidden admin login route (keep this secret!)
+Route::get('/admin-portal-x7k9m', function () {
+    return Inertia::render('auth/login', ['role' => 'admin']);
+})->name('admin.login');
 
 Route::get('/search-business', function () {
     return Inertia::render('SearchBusiness');
@@ -28,8 +29,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard route
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
-    // Unified Messages Center for both seller and buyer
-    Route::middleware(['role:seller,buyer'])->group(function () {
+    // Unified Messages Center for members
+    Route::middleware(['role:member'])->group(function () {
         Route::get('/messages', function () {
             return Inertia::render('Messages/Index');
         })->name('messages');
@@ -86,43 +87,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('dev-settings');
     });
     
-    // Seller routes
-    Route::prefix('seller')->middleware(['role:seller'])->name('seller.')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'seller'])->name('dashboard');
+    // Member routes (unified buyer and seller functionality)
+    Route::prefix('member')->middleware(['role:member'])->name('member.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'member'])->name('dashboard');
         
-        // Listings Management - Sellers can only manage their own listings
-        Route::resource('listings', \App\Http\Controllers\Seller\ListingController::class);
+        // Listings Management - Members can manage their own listings
+        Route::resource('listings', \App\Http\Controllers\Member\ListingController::class);
         
-        // Messages now handled by unified Messages Center
-
-        // Features in development for seller
+        // Interested listings (buying functionality)
+        Route::get('/interested', [\App\Http\Controllers\Member\InterestedListingController::class, 'index'])->name('interested');
+        Route::post('/interested/listings/{listing}/toggle', [\App\Http\Controllers\Member\InterestedListingController::class, 'toggle'])->name('interested.toggle');
+        Route::post('/interested/listings/{listing}/star', [\App\Http\Controllers\Member\InterestedListingController::class, 'star'])->name('interested.star');
+        Route::delete('/interested/listings/{listing}', [\App\Http\Controllers\Member\InterestedListingController::class, 'unstar'])->name('interested.unstar');
+        
+        // Features in development for members
         Route::get('/feedback', function () {
             return Inertia::render('FeatureInDevelopment', [
-                'featureName' => 'Seller Feedback System',
-                'returnUrl' => route('seller.dashboard')
+                'featureName' => 'Member Feedback System',
+                'returnUrl' => route('member.dashboard')
             ]);
         })->name('feedback');
-    });
-    
-    // Buyer routes
-    Route::prefix('buyer')->middleware(['role:buyer'])->name('buyer.')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'buyer'])->name('dashboard');
-        
-        // Features in development for buyer
-        Route::get('/feedback', function () {
-            return Inertia::render('FeatureInDevelopment', [
-                'featureName' => 'Buyer Feedback System',
-                'returnUrl' => route('buyer.dashboard')
-            ]);
-        })->name('feedback');
-        
-        // Messages now handled by unified Messages Center
-        
-        // Interested listings
-        Route::get('/interested', [\App\Http\Controllers\Buyer\InterestedListingController::class, 'index'])->name('interested');
-        Route::post('/interested/listings/{listing}/toggle', [\App\Http\Controllers\Buyer\InterestedListingController::class, 'toggle'])->name('interested.toggle');
-        Route::post('/interested/listings/{listing}/star', [\App\Http\Controllers\Buyer\InterestedListingController::class, 'star'])->name('interested.star');
-        Route::delete('/interested/listings/{listing}', [\App\Http\Controllers\Buyer\InterestedListingController::class, 'unstar'])->name('interested.unstar');
     });
 });
 

@@ -26,6 +26,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
         'role',
         'suspended_at',
@@ -62,14 +63,21 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
+    public function isMember(): bool
+    {
+        return $this->role === 'member';
+    }
+
     public function isSeller(): bool
     {
-        return $this->role === 'seller';
+        // Legacy support: both seller and member can sell
+        return $this->role === 'seller' || $this->role === 'member';
     }
 
     public function isBuyer(): bool
     {
-        return $this->role === 'buyer';
+        // Legacy support: both buyer and member can buy
+        return $this->role === 'buyer' || $this->role === 'member';
     }
 
     /**

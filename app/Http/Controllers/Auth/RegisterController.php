@@ -29,8 +29,9 @@ class RegisterController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:'.User::class,
+            'phone' => 'required|string|max:20',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => 'required|in:buyer,seller,admin',
+            'role' => 'required|in:buyer,seller,admin,member',
         ]);
 
         // In a real app, you might want to restrict who can create admin users
@@ -38,6 +39,7 @@ class RegisterController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);

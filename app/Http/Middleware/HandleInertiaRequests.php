@@ -47,6 +47,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user() ? [
                     ...$request->user()->toArray(),
                     'is_admin' => $request->user()->isAdmin(),
+                    'is_member' => $request->user()->isMember(),
                     'is_seller' => $request->user()->isSeller(),
                     'is_buyer' => $request->user()->isBuyer(),
                 ] : null,
