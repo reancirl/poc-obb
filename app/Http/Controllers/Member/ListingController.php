@@ -55,7 +55,7 @@ class ListingController extends Controller
         $validated = $request->validate([
             'headline' => 'required|string|max:255',
             'industry' => 'required|string|max:255',
-            'listing_type' => 'required|string|in:Established Business,Asset Sale,Business Real Estate for Sale',
+            'listing_type' => 'required|string|in:Established Business for Sale,Asset Sale,Business Real Estate for Sale (No Business Included),Business Real Estate for Lease (No Business Included),Startup Opportunity',
             'location_name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'city' => 'required|string|max:100',
@@ -73,7 +73,6 @@ class ListingController extends Controller
             'year_established' => 'nullable|integer|min:1800|max:' . (date('Y') + 1),
             // 'seller_financing' => 'boolean',
             'business_description' => 'nullable|string',
-            'ad_id' => 'nullable|string|max:100',
             'inventory' => 'nullable|integer',
             'real_estate_type' => 'nullable|string|max:100',
             'building_size' => 'nullable|numeric|min:0',
@@ -91,6 +90,34 @@ class ListingController extends Controller
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB max per file
             'primary_image_index' => 'nullable|integer',
+            // Enhanced financial fields
+            'ffe' => 'nullable|numeric|min:0',
+            'inventory_value' => 'nullable|numeric|min:0',
+            'inventory_included_in_asking_price' => 'boolean',
+            'financing_notes' => 'nullable|string|max:80',
+            'seller_financing_available' => 'boolean',
+            'real_estate_property_type' => 'nullable|string|max:255',
+            // Enhanced Business Details Fields
+            'absentee_owner' => 'boolean',
+            'home_based' => 'boolean',
+            'relocatable' => 'boolean',
+            'established_franchise' => 'boolean',
+            'business_website' => 'nullable|url|max:255',
+            'keep_website_confidential' => 'boolean',
+            'facilities_assets' => 'nullable|string|max:560',
+            'market_competition' => 'nullable|string|max:560',
+            // Social Media and Additional Fields
+            'website' => 'nullable|url|max:255',
+            'facebook' => 'nullable|url|max:255',
+            'twitter' => 'nullable|url|max:255',
+            'linkedin' => 'nullable|url|max:255',
+            'instagram' => 'nullable|url|max:255',
+            'youtube' => 'nullable|url|max:255',
+            'other_social_media' => 'nullable|string|max:255',
+            'photos' => 'nullable|string',
+            'videos' => 'nullable|string',
+            'documents' => 'nullable|string',
+            'other_details' => 'nullable|string',
         ]);
 
         // Set the authenticated user as the owner
@@ -150,7 +177,7 @@ class ListingController extends Controller
         $validated = $request->validate([
             'headline' => 'required|string|max:255',
             'industry' => 'required|string|max:255',
-            'listing_type' => 'required|string|in:Established Business,Asset Sale,Business Real Estate for Sale',
+            'listing_type' => 'required|string|in:Established Business for Sale,Asset Sale,Business Real Estate for Sale (No Business Included),Business Real Estate for Lease (No Business Included),Startup Opportunity',
             'location_name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'city' => 'required|string|max:100',
@@ -168,7 +195,6 @@ class ListingController extends Controller
             'year_established' => 'nullable|integer|min:1800|max:' . (date('Y') + 1),
             // 'seller_financing' => 'boolean',
             'business_description' => 'nullable|string',
-            'ad_id' => 'nullable|string|max:100',
             'inventory' => 'nullable|integer|min:0',
             'real_estate_type' => 'nullable|string|max:100',
             'building_size' => 'nullable|numeric|min:0',
@@ -188,6 +214,34 @@ class ListingController extends Controller
             'primary_image_index' => 'nullable|integer',
             'deleted_image_ids' => 'nullable|array',
             'deleted_image_ids.*' => 'exists:listing_images,id',
+            // Enhanced financial fields
+            'ffe' => 'nullable|numeric|min:0',
+            'inventory_value' => 'nullable|numeric|min:0',
+            'inventory_included_in_asking_price' => 'boolean',
+            'financing_notes' => 'nullable|string|max:80',
+            'seller_financing_available' => 'boolean',
+            'real_estate_property_type' => 'nullable|string|max:255',
+            // Enhanced Business Details Fields
+            'absentee_owner' => 'boolean',
+            'home_based' => 'boolean',
+            'relocatable' => 'boolean',
+            'established_franchise' => 'boolean',
+            'business_website' => 'nullable|url|max:255',
+            'keep_website_confidential' => 'boolean',
+            'facilities_assets' => 'nullable|string|max:560',
+            'market_competition' => 'nullable|string|max:560',
+            // Social Media and Additional Fields
+            'website' => 'nullable|url|max:255',
+            'facebook' => 'nullable|url|max:255',
+            'twitter' => 'nullable|url|max:255',
+            'linkedin' => 'nullable|url|max:255',
+            'instagram' => 'nullable|url|max:255',
+            'youtube' => 'nullable|url|max:255',
+            'other_social_media' => 'nullable|string|max:255',
+            'photos' => 'nullable|string',
+            'videos' => 'nullable|string',
+            'documents' => 'nullable|string',
+            'other_details' => 'nullable|string',
         ]);
 
         // Update the listing

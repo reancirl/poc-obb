@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             
             // Basic Information
-            $table->enum('listing_type', ['Established Business', 'Asset Sale', 'Business Real Estate for Sale']);
+            $table->enum('listing_type', ['Established Business for Sale', 'Asset Sale', 'Business Real Estate for Sale (No Business Included)', 'Business Real Estate for Lease (No Business Included)', 'Startup Opportunity']);
             $table->string('industry');
             $table->string('headline', 70);
             

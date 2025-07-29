@@ -9,6 +9,10 @@ use Inertia\Inertia;
 
 class PublicListingController extends Controller
 {
+    public function welcome()
+    {
+        return Inertia::render('welcome');
+    }
     /**
      * Display a listing of published listings.
      */

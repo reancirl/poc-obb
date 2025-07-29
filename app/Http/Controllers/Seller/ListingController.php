@@ -55,7 +55,7 @@ class ListingController extends Controller
         $validated = $request->validate([
             'headline' => 'required|string|max:255',
             'industry' => 'required|string|max:255',
-            'listing_type' => 'required|string|in:Established Business,Asset Sale,Business Real Estate for Sale',
+            'listing_type' => 'required|string|in:Established Business for Sale,Asset Sale,Business Real Estate for Sale (No Business Included),Business Real Estate for Lease (No Business Included),Startup Opportunity',
             'location_name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'city' => 'required|string|max:100',
@@ -150,7 +150,7 @@ class ListingController extends Controller
         $validated = $request->validate([
             'headline' => 'required|string|max:255',
             'industry' => 'required|string|max:255',
-            'listing_type' => 'required|string|in:Established Business,Asset Sale,Business Real Estate for Sale',
+            'listing_type' => 'required|string|in:Established Business for Sale,Asset Sale,Business Real Estate for Sale (No Business Included),Business Real Estate for Lease (No Business Included),Startup Opportunity',
             'location_name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'city' => 'required|string|max:100',

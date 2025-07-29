@@ -5,7 +5,9 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 // Public routes
-Route::get('/', [\App\Http\Controllers\PublicListingController::class, 'index'])->name('home');
+Route::get('/', [\App\Http\Controllers\PublicListingController::class, 'welcome'])->name('home');
+
+Route::get('/all-listings', [\App\Http\Controllers\PublicListingController::class, 'index'])->name('public-listings');
 
 // Hidden admin login route (keep this secret!)
 Route::get('/admin-portal-x7k9m', function () {

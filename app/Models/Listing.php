@@ -34,7 +34,6 @@ class Listing extends Model
         'year_established',
         'seller_financing',
         'business_description',
-        'ad_id',
         'inventory',
         'real_estate_type',
         'building_size',
@@ -49,6 +48,34 @@ class Listing extends Model
         'listing_agent',
         'agent_phone_number',
         'status',
+        // Enhanced financial fields
+        'ffe',
+        'inventory_value',
+        'inventory_included_in_asking_price',
+        'financing_notes',
+        'seller_financing_available',
+        'real_estate_property_type',
+        // Enhanced Business Details Fields
+        'absentee_owner',
+        'home_based',
+        'relocatable',
+        'established_franchise',
+        'business_website',
+        'keep_website_confidential',
+        'facilities_assets',
+        'market_competition',
+        // Social Media and Additional Fields
+        'website',
+        'facebook',
+        'twitter',
+        'linkedin',
+        'instagram',
+        'youtube',
+        'other_social_media',
+        'photos',
+        'videos',
+        'documents',
+        'other_details',
     ];
 
     protected $appends = ['image_urls'];

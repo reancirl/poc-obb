@@ -38,7 +38,7 @@ class ListingController extends Controller
     public function create()
     {
         return Inertia::render('Seller/Listings/Create', [
-            'listingTypes' => ['Established Business', 'Asset Sale', 'Business Real Estate for Sale'],
+            'listingTypes' => ['Established Business for Sale', 'Asset Sale', 'Business Real Estate for Sale (No Business Included)', 'Business Real Estate for Lease (No Business Included)', 'Startup Opportunity'],
             'industries' => [
                 'IT & Software',
                 'Healthcare',
@@ -67,7 +67,7 @@ class ListingController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'listing_type' => 'required|in:Established Business,Asset Sale,Business Real Estate for Sale',
+            'listing_type' => 'required|in:Established Business for Sale,Asset Sale,Business Real Estate for Sale (No Business Included),Business Real Estate for Lease (No Business Included),Startup Opportunity',
             'industry' => 'required|string|max:255',
             'headline' => 'required|string|max:70',
             'location_name' => 'required|string|max:255',
@@ -132,7 +132,7 @@ class ListingController extends Controller
         
         return Inertia::render('Seller/Listings/Edit', [
             'listing' => $listing,
-            'listingTypes' => ['Established Business', 'Asset Sale', 'Business Real Estate for Sale'],
+            'listingTypes' => ['Established Business for Sale', 'Asset Sale', 'Business Real Estate for Sale (No Business Included)', 'Business Real Estate for Lease (No Business Included)', 'Startup Opportunity'],
             'industries' => [
                 'IT & Software',
                 'Healthcare',
@@ -163,7 +163,7 @@ class ListingController extends Controller
         $this->authorize('update', $listing);
 
         $validated = $request->validate([
-            'listing_type' => 'required|in:Established Business,Asset Sale,Business Real Estate for Sale',
+            'listing_type' => 'required|in:Established Business for Sale,Asset Sale,Business Real Estate for Sale (No Business Included),Business Real Estate for Lease (No Business Included),Startup Opportunity',
             'industry' => 'required|string|max:255',
             'headline' => 'required|string|max:70',
             'location_name' => 'required|string|max:255',

@@ -69,168 +69,149 @@ export default function PublicListings({ listings, filters, auth, interestedList
   };
 
   return (
-    <PublicLayout>
+    <PublicLayout auth={auth}>
       <Head title="Business Listings" />
-      
-      <div className="py-12">
-        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div className="mb-8 flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Business Listings</h1>
-              <p className="mt-2 text-gray-600">Browse our available businesses for sale</p>
-            </div>
-            <div className="flex space-x-2">
-              <Link
-                href={auth?.user ? route('dashboard') : route('login')}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#010079]"
-                style={{ '--tw-ring-color': '#010079' } as React.CSSProperties}
-              >
-                {auth?.user ? 'View Dashboard' : 'Sign In'}
-              </Link>
-              {!auth?.user && (
-                <Link
-                  href={route('register')}
+      <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        
+        {/* Search and filter */}
+        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+          <div className="p-6">
+            <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <label htmlFor="search" className="block text-sm font-medium text-gray-700">Search</label>
+                <input
+                  type="text"
+                  id="search"
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#010079] focus:border-[#010079] sm:text-sm p-2"
+                  placeholder="Search by business name, location..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+              
+              <div className="w-full md:w-1/4">
+                <label htmlFor="industry" className="block text-sm font-medium text-gray-700">Industry</label>
+                <select
+                  id="industry"
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#010079] focus:border-[#010079] sm:text-sm p-2"
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value)}
+                >
+                  <option value="">All Industries</option>
+                  <option value="IT & Software">IT & Software</option>
+                  <option value="Healthcare">Healthcare</option>
+                  <option value="Retail & E-commerce">Retail & E-commerce</option>
+                  <option value="Education & Training">Education & Training</option>
+                  <option value="Hospitality & Tourism">Hospitality & Tourism</option>
+                  <option value="Manufacturing">Manufacturing</option>
+                  <option value="Finance & Insurance">Finance & Insurance</option>
+                  <option value="Real Estate">Real Estate</option>
+                  <option value="Construction & Contractors">Construction & Contractors</option>
+                  <option value="Food & Beverage">Food & Beverage</option>
+                  <option value="Agriculture">Agriculture</option>
+                  <option value="Automotive and Boat">Automotive and Boat</option>
+                  <option value="Beauty and Personal Care">Beauty and Personal Care</option>
+                  <option value="Communication and Media">Communication and Media</option>
+                  <option value="Pet Services">Pet Services</option>
+                  <option value="Service Businesses">Service Businesses</option>
+                  <option value="Transportation and Storage">Transportation and Storage</option>
+                  <option value="Wholesale and Distributors">Wholesale and Distributors</option>
+                </select>
+              </div>
+              
+              <div className="flex items-end">
+                <button
+                  type="submit"
                   className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#010079]"
                   style={{ backgroundColor: '#010079', '--tw-ring-color': '#010079' } as React.CSSProperties}
                 >
-                  Join
-                </Link>
-              )}
-            </div>
-          </div>
-          
-          {/* Search and filter */}
-          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-            <div className="p-6">
-              <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <label htmlFor="search" className="block text-sm font-medium text-gray-700">Search</label>
-                  <input
-                    type="text"
-                    id="search"
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#010079] focus:border-[#010079] sm:text-sm p-2"
-                    placeholder="Search by business name, location..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                </div>
-                
-                <div className="w-full md:w-1/4">
-                  <label htmlFor="industry" className="block text-sm font-medium text-gray-700">Industry</label>
-                  <select
-                    id="industry"
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#010079] focus:border-[#010079] sm:text-sm p-2"
-                    value={industry}
-                    onChange={(e) => setIndustry(e.target.value)}
-                  >
-                    <option value="">All Industries</option>
-                    <option value="IT & Software">IT & Software</option>
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="Retail & E-commerce">Retail & E-commerce</option>
-                    <option value="Education & Training">Education & Training</option>
-                    <option value="Hospitality & Tourism">Hospitality & Tourism</option>
-                    <option value="Manufacturing">Manufacturing</option>
-                    <option value="Finance & Insurance">Finance & Insurance</option>
-                    <option value="Real Estate">Real Estate</option>
-                    <option value="Construction & Contractors">Construction & Contractors</option>
-                    <option value="Food & Beverage">Food & Beverage</option>
-                  </select>
-                </div>
-                
-                <div className="flex items-end">
-                  <button
-                    type="submit"
-                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#010079]"
-                    style={{ backgroundColor: '#010079', '--tw-ring-color': '#010079' } as React.CSSProperties}
-                  >
-                    Search
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-          
-          {/* Listings grid */}
-          {listings.data.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {listings.data.map((listing) => (
-                <Link key={listing.id} href={route('listings.show', listing.id)}>
-                  <div className="bg-white overflow-hidden shadow-sm rounded-lg transition-all hover:shadow-md">
-                    {/* Listing image */}
-                    <div className="h-48 overflow-hidden">
-                      {listing.image_urls && listing.image_urls.length > 0 ? (
-                        <img
-                          src={listing.image_urls.find(img => img.is_primary)?.url || listing.image_urls[0].url}
-                          alt={listing.headline}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-gray-400">No image available</span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Listing details */}
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{listing.headline}</h3>
-                      <div className="mt-1 flex items-center text-sm text-gray-500">
-                        <span>{listing.city}, {listing.state}</span>
-                        <span className="mx-2">•</span>
-                        <span>{listing.industry}</span>
-                      </div>
-                      <div className="mt-2 flex justify-between items-center">
-                        <div className="text-sm font-medium text-gray-500">
-                          Asking Price
-                        </div>
-                        <div className="flex items-center">
-                          <div className="text-lg font-bold mr-2" style={{ color: '#D5AD36' }}>
-                            {formatCurrency(listing.asking_price)}
-                          </div>
-                          {auth?.user && auth.user.role === 'buyer' && (
-                            <div onClick={(e) => e.preventDefault()}>  
-                              <StarButton 
-                                listingId={listing.id} 
-                                initialIsStarred={interestedListingIds.includes(listing.id)}
-                                className="bg-white bg-opacity-20 p-1 rounded-full hover:bg-opacity-30"
-                                isLoggedIn={!!auth?.user}
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      {listing.cash_flow && (
-                        <div className="mt-1 flex justify-between items-center">
-                          <div className="text-sm font-medium text-gray-500">
-                            Cash Flow
-                          </div>
-                          <div className="text-sm text-gray-900">
-                            {formatCurrency(listing.cash_flow)}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-              <div className="p-12 text-center">
-                <p className="text-gray-500 text-lg">No listings found matching your criteria.</p>
-                <p className="mt-2 text-gray-400">Try adjusting your search filters.</p>
+                  Search
+                </button>
               </div>
-            </div>
-          )}
-          
-          {/* Pagination */}
-          <Pagination 
-            links={listings.links} 
-            currentPage={listings.current_page}
-            lastPage={listings.last_page} 
-            className="mt-8"
-          />
+            </form>
+          </div>
         </div>
+        
+        {/* Listings grid */}
+        {listings.data.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {listings.data.map((listing) => (
+              <Link key={listing.id} href={route('listings.show', listing.id)}>
+                <div className="bg-white overflow-hidden shadow-sm rounded-lg transition-all hover:shadow-md">
+                  {/* Listing image */}
+                  <div className="h-48 overflow-hidden">
+                    {listing.image_urls && listing.image_urls.length > 0 ? (
+                      <img
+                        src={listing.image_urls.find(img => img.is_primary)?.url || listing.image_urls[0].url}
+                        alt={listing.headline}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <span className="text-gray-400">No image available</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Listing details */}
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{listing.headline}</h3>
+                    <div className="mt-1 flex items-center text-sm text-gray-500">
+                      <span>{listing.city}, {listing.state}</span>
+                      <span className="mx-2">•</span>
+                      <span>{listing.industry}</span>
+                    </div>
+                    <div className="mt-2 flex justify-between items-center">
+                      <div className="text-sm font-medium text-gray-500">
+                        Asking Price
+                      </div>
+                      <div className="flex items-center">
+                        <div className="text-lg font-bold mr-2" style={{ color: '#D5AD36' }}>
+                          {formatCurrency(listing.asking_price)}
+                        </div>
+                        {auth?.user && auth.user.role === 'buyer' && (
+                          <div onClick={(e) => e.preventDefault()}>  
+                            <StarButton 
+                              listingId={listing.id} 
+                              initialIsStarred={interestedListingIds.includes(listing.id)}
+                              className="bg-white bg-opacity-20 p-1 rounded-full hover:bg-opacity-30"
+                              isLoggedIn={!!auth?.user}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {listing.cash_flow && (
+                      <div className="mt-1 flex justify-between items-center">
+                        <div className="text-sm font-medium text-gray-500">
+                          Cash Flow
+                        </div>
+                        <div className="text-sm text-gray-900">
+                          {formatCurrency(listing.cash_flow)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div className="p-12 text-center">
+              <p className="text-gray-500 text-lg">No listings found matching your criteria.</p>
+              <p className="mt-2 text-gray-400">Try adjusting your search filters.</p>
+            </div>
+          </div>
+        )}
+        
+        {/* Pagination */}
+        <Pagination 
+          links={listings.links} 
+          currentPage={listings.current_page}
+          lastPage={listings.last_page} 
+          className="mt-8"
+        />
       </div>
     </PublicLayout>
   );

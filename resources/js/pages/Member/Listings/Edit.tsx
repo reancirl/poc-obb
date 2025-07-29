@@ -1,16 +1,20 @@
+import React, { useState, useCallback, useEffect } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
-import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import AppLayout from '@/layouts/app-layout';
-import ListingForm, { type FormData } from '@/components/ListingForm';
+import { Stepper } from '@/components/ui/stepper';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { type SharedData } from '@/types';
 
 type FileWithPreview = (File & {
   preview: string;
   isPrimary: boolean;
   id?: number;
-  name: string; // Ensure name property is available
-  type: string; // Ensure type property is available
-  size: number; // Ensure size property is available
+  name: string;
+  type: string;
+  size: number;
 }) | {
   preview: string;
   isPrimary: boolean;
@@ -19,540 +23,732 @@ type FileWithPreview = (File & {
   is_primary: boolean;
 };
 
-// Define a type that matches our form data structure
-type Listing = {
-id?: number;
-listing_type?: string;
-industry?: string;
-headline?: string;
-location_name?: string;
-address?: string;
-city?: string;
-state?: string;
-zip?: string;
-county?: string;
-location_confidentiality?: string;
-email?: string;
-phone_number?: string;
-asking_price?: number | string | null;
-cash_flow?: number | string | null;
-gross_revenue?: number | string | null;
-ebitda?: string | null;
-rent?: string | null;
-year_established?: number | string | null;
-seller_financing?: boolean;
-business_description?: string;
-ad_id?: string;
-inventory?: string;
-real_estate_type?: string;
-building_size?: number | string | null;
-lease_expiration?: string | null;
-employees?: number | string | null;
-facilities?: string;
-competition?: string;
-growth_expansion?: string;
-financing_details?: string;
-support_training?: string;
-reason_for_selling?: string;
-listing_agent?: string;
-agent_phone_number?: string;
-status?: 'draft' | 'published' | 'sold' | 'inactive';
-created_at?: string;
-updated_at?: string;
-[key: string]: any; // Allow additional properties
-};
-
-interface Props {
-listing: Listing;
+interface FormData {
+  headline: string;
+  industry: string;
+  listing_type: string;
+  location_name: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  county: string;
+  location_confidentiality: string;
+  email: string;
+  phone_number: string;
+  asking_price: number;
+  cash_flow: number;
+  gross_revenue: number;
+  ebitda: number;
+  rent: number;
+  year_established: number;
+  seller_financing: boolean;
+  business_description: string;
+  inventory: string;
+  real_estate_type: string;
+  building_size: number;
+  lease_expiration: string;
+  employees: number;
+  facilities: string;
+  competition: string;
+  growth_expansion: string;
+  financing_details: string;
+  support_training: string;
+  reason_for_selling: string;
+  listing_agent: string;
+  agent_phone_number: string;
+  status: string;
+  // Enhanced financial fields
+  ffe: number;
+  inventory_value: number;
+  inventory_included_in_asking_price: boolean;
+  financing_notes: string;
+  seller_financing_available: boolean;
+  real_estate_property_type: string;
+  // Enhanced Business Details fields
+  absentee_owner: boolean;
+  home_based: boolean;
+  relocatable: boolean;
+  established_franchise: boolean;
+  business_website: string;
+  keep_website_confidential: boolean;
+  facilities_assets: string;
+  market_competition: string;
+  // Social Media and Additional Fields
+  website: string;
+  facebook: string;
+  twitter: string;
+  linkedin: string;
+  instagram: string;
+  youtube: string;
+  other_social_media: string;
+  photos: string;
+  videos: string;
+  documents: string;
+  other_details: string;
+  user_id: string;
+  [key: string]: any;
 }
 
-// Helper function to convert form data to the expected format
-const prepareFormData = (data: FormData): Record<string, any> => {
-    const formData = { ...data };
+type Listing = {
+  id?: number;
+  listing_type?: string;
+  industry?: string;
+  headline?: string;
+  location_name?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  county?: string;
+  location_confidentiality?: string;
+  email?: string;
+  phone_number?: string;
+  asking_price?: number | string | null;
+  cash_flow?: number | string | null;
+  gross_revenue?: number | string | null;
+  ebitda?: string | null;
+  rent?: string | null;
+  year_established?: number | string | null;
+  seller_financing?: boolean;
+  business_description?: string;
+  inventory?: string;
+  real_estate_type?: string;
+  building_size?: number | string | null;
+  lease_expiration?: string | null;
+  employees?: number | string | null;
+  facilities?: string;
+  competition?: string;
+  growth_expansion?: string;
+  financing_details?: string;
+  support_training?: string;
+  reason_for_selling?: string;
+  listing_agent?: string;
+  agent_phone_number?: string;
+  status?: string;
+  // Enhanced financial fields
+  ffe?: number;
+  inventory_value?: number;
+  inventory_included_in_asking_price?: boolean;
+  financing_notes?: string;
+  seller_financing_available?: boolean;
+  real_estate_property_type?: string;
+  // Enhanced Business Details fields
+  absentee_owner?: boolean;
+  home_based?: boolean;
+  relocatable?: boolean;
+  established_franchise?: boolean;
+  business_website?: string;
+  keep_website_confidential?: boolean;
+  facilities_assets?: string;
+  market_competition?: string;
+  // Social Media and Additional Fields
+  website?: string;
+  facebook?: string;
+  twitter?: string;
+  linkedin?: string;
+  instagram?: string;
+  youtube?: string;
+  other_social_media?: string;
+  photos?: string;
+  videos?: string;
+  documents?: string;
+  other_details?: string;
+  image_urls?: string[];
+  [key: string]: any;
+};
 
-    // Convert empty strings to null for optional fields
-    Object.keys(formData).forEach(key => {
-    if (formData[key] === '') {
-    formData[key] = null;
+interface Props extends SharedData {
+  listing: Listing;
+}
+
+export default function EditListing({ listing, auth }: Props) {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [files, setFiles] = useState<FileWithPreview[]>([]);
+  const [deletedImageIds, setDeletedImageIds] = useState<number[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isFinancialSectionCollapsed, setIsFinancialSectionCollapsed] = useState(false);
+  const [isBusinessDetailsSectionCollapsed, setIsBusinessDetailsSectionCollapsed] = useState(false);
+
+  // Initialize form with listing data
+  const form = useForm<FormData>({
+    headline: listing.headline ?? '',
+    industry: listing.industry ?? '',
+    listing_type: listing.listing_type ?? '',
+    location_name: listing.location_name ?? '',
+    address: listing.address ?? '',
+    city: listing.city ?? '',
+    state: listing.state ?? '',
+    zip: listing.zip ?? '',
+    county: listing.county ?? '',
+    location_confidentiality: listing.location_confidentiality ?? '',
+    email: listing.email ?? '',
+    phone_number: listing.phone_number ?? '',
+    asking_price: Number(listing.asking_price) || 0,
+    cash_flow: Number(listing.cash_flow) || 0,
+    gross_revenue: Number(listing.gross_revenue) || 0,
+    ebitda: Number(listing.ebitda) || 0,
+    rent: Number(listing.rent) || 0,
+    year_established: Number(listing.year_established) || 0,
+    seller_financing: listing.seller_financing ?? false,
+    business_description: listing.business_description ?? '',
+    inventory: listing.inventory ?? '',
+    real_estate_type: listing.real_estate_type ?? '',
+    building_size: Number(listing.building_size) || 0,
+    lease_expiration: listing.lease_expiration ?? '',
+    employees: Number(listing.employees) || 0,
+    facilities: listing.facilities ?? '',
+    competition: listing.competition ?? '',
+    growth_expansion: listing.growth_expansion ?? '',
+    financing_details: listing.financing_details ?? '',
+    support_training: listing.support_training ?? '',
+    reason_for_selling: listing.reason_for_selling ?? '',
+    listing_agent: listing.listing_agent ?? '',
+    agent_phone_number: listing.agent_phone_number ?? '',
+    status: listing.status ?? 'draft',
+    // Enhanced financial fields
+    ffe: listing.ffe ?? 0,
+    inventory_value: listing.inventory_value ?? 0,
+    inventory_included_in_asking_price: listing.inventory_included_in_asking_price ?? false,
+    financing_notes: listing.financing_notes ?? '',
+    seller_financing_available: listing.seller_financing_available ?? false,
+    real_estate_property_type: listing.real_estate_property_type ?? '',
+    // Enhanced Business Details fields
+    absentee_owner: listing.absentee_owner ?? false,
+    home_based: listing.home_based ?? false,
+    relocatable: listing.relocatable ?? false,
+    established_franchise: listing.established_franchise ?? false,
+    business_website: listing.business_website ?? '',
+    keep_website_confidential: listing.keep_website_confidential ?? false,
+    facilities_assets: listing.facilities_assets ?? '',
+    market_competition: listing.market_competition ?? '',
+    // Social Media and Additional Fields
+    website: listing.website ?? '',
+    facebook: listing.facebook ?? '',
+    twitter: listing.twitter ?? '',
+    linkedin: listing.linkedin ?? '',
+    instagram: listing.instagram ?? '',
+    youtube: listing.youtube ?? '',
+    other_social_media: listing.other_social_media ?? '',
+    photos: listing.photos ?? '',
+    videos: listing.videos ?? '',
+    documents: listing.documents ?? '',
+    other_details: listing.other_details ?? '',
+    user_id: auth.user.id.toString(),
+  });
+
+  // Load existing images
+  useEffect(() => {
+    if (listing.image_urls && listing.image_urls.length > 0) {
+      const existingImages = listing.image_urls.map((url: string, index: number) => ({
+        preview: url,
+        isPrimary: index === 0,
+        id: index + 1,
+        url: url,
+        is_primary: index === 0
+      }));
+      setFiles(existingImages);
     }
+  }, [listing.image_urls]);
+
+  const listingTypes = [
+    'Established Business for Sale',
+    'Asset Sale',
+    'Business Real Estate for Sale (No Business Included)',
+    'Business Real Estate for Lease (No Business Included)',
+    'Startup Opportunity'
+  ];
+
+  const industries = [
+    'IT & Software',
+    'Healthcare',
+    'Retail & E-commerce',
+    'Education & Training',
+    'Hospitality & Tourism',
+    'Manufacturing',
+    'Finance & Insurance',
+    'Real Estate',
+    'Construction & Contractors',
+    'Food & Beverage'
+  ];
+
+  const validateStep = (step: number): boolean => {
+    const errors: Record<string, string> = {};
+
+    if (step === 1) {
+      if (!form.data.headline?.trim()) errors.headline = 'Business headline is required';
+      if (!form.data.industry?.trim()) errors.industry = 'Industry is required';
+      if (!form.data.listing_type?.trim()) errors.listing_type = 'Listing type is required';
+      if (!form.data.location_name?.trim()) errors.location_name = 'Location is required';
+      if (!form.data.city?.trim()) errors.city = 'City is required';
+      if (!form.data.state?.trim()) errors.state = 'State is required';
+      if (!form.data.email?.trim()) errors.email = 'Email is required';
+      if (!form.data.phone_number?.trim()) errors.phone_number = 'Phone number is required';
+    }
+
+    if (step === 3) {
+      if (!form.data.asking_price || form.data.asking_price <= 0) {
+        errors.asking_price = 'Asking price is required and must be greater than 0';
+      }
+    }
+
+    if (step === 4) {
+      if (!form.data.business_description?.trim()) {
+        errors.business_description = 'Business description is required';
+      }
+    }
+
+    // Set errors and return validation result
+    if (Object.keys(errors).length > 0) {
+      form.setError(errors);
+      return false;
+    }
+
+    form.clearErrors();
+    return true;
+  };
+
+  const nextStep = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(prev => Math.min(prev + 1, 4));
+    }
+  };
+
+  const prevStep = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateStep(currentStep)) {
+      return;
+    }
+
+    setIsUploading(true);
+
+    const formData = new FormData();
+    
+    // Add form fields with proper type conversion
+    Object.entries(form.data).forEach(([key, value]) => {
+      if (key === 'user_id') return; // Skip user_id for updates
+      
+      if (typeof value === 'boolean') {
+        formData.append(key, value ? '1' : '0');
+      } else if (typeof value === 'number') {
+        formData.append(key, value.toString());
+      } else if (value !== null && value !== undefined) {
+        formData.append(key, value.toString());
+      }
     });
 
-    // Convert string numbers to actual numbers
-    if (formData.asking_price) {
-    formData.asking_price = Number(formData.asking_price);
-    }
+    formData.append('_method', 'PUT');
 
-    if (formData.cash_flow) {
-    formData.cash_flow = Number(formData.cash_flow);
-    }
+    router.post(route('member.listings.update', listing.id), formData, {
+      preserveState: false,
+      preserveScroll: false,
+      onSuccess: () => {
+        toast.success('Listing updated successfully!');
+        setIsUploading(false);
+      },
+      onError: (errors) => {
+        console.error('Update errors:', errors);
+        toast.error('Failed to update listing. Please check the form and try again.');
+        setIsUploading(false);
+      },
+      onFinish: () => {
+        setIsUploading(false);
+      }
+    });
+  };
 
-    if (formData.gross_revenue) {
-    formData.gross_revenue = Number(formData.gross_revenue);
-    }
+  const cancel = () => {
+    router.visit(route('member.listings.index'));
+  };
 
-    if (formData.year_established) {
-    formData.year_established = Number(formData.year_established);
-    }
+  const steps = [
+    { id: 1, title: 'Basic Info', description: 'Business details and location', completed: currentStep > 1, current: currentStep === 1 },
+    { id: 2, title: 'Plan Selection', description: 'Choose your listing plan', completed: currentStep > 2, current: currentStep === 2 },
+    { id: 3, title: 'Financial & Business Details', description: 'Enhanced business information', completed: currentStep > 3, current: currentStep === 3 },
+    { id: 4, title: 'Description', description: 'Business description and final details', completed: currentStep > 4, current: currentStep === 4 }
+  ];
 
-    if (formData.building_size) {
-    formData.building_size = Number(formData.building_size);
-    }
-
-    if (formData.employees) {
-    formData.employees = Number(formData.employees);
-    }
-
-    // Convert string booleans to actual booleans
-    if (formData.seller_financing !== undefined) {
-    formData.seller_financing = formData.seller_financing === 'true' || formData.seller_financing === true;
-    }
-
-    return formData;
-    };
-
-    export default function EditListing({ listing }: Props) {
-    // State for file uploads
-    const [files, setFiles] = useState<FileWithPreview[]>([]);
-    const [deletedImageIds, setDeletedImageIds] = useState<number[]>([]);
-
-    // Initialize form with listing data
-    const form = useForm<FormData & { primary_image_index?: number }>({
-        headline: listing.headline ?? '',
-        industry: listing.industry ?? '',
-        listing_type: listing.listing_type ?? '',
-        location_name: listing.location_name ?? '',
-        address: listing.address ?? '',
-        city: listing.city ?? '',
-        state: listing.state ?? '',
-        zip: listing.zip ?? '',
-        county: listing.county ?? '',
-        location_confidentiality: listing.location_confidentiality ?? '',
-        email: listing.email ?? '',
-        phone_number: listing.phone_number ?? '',
-        asking_price: listing.asking_price ?? '',
-        cash_flow: listing.cash_flow ?? '',
-        gross_revenue: listing.gross_revenue ?? '',
-        ebitda: listing.ebitda ?? '',
-        rent: listing.rent ?? '',
-        year_established: listing.year_established ?? '',
-        // seller_financing rule is commented out, but if you re-enable it:
-        // seller_financing: listing.seller_financing ?? false,
-        business_description: listing.business_description ?? '',
-        ad_id: listing.ad_id ?? '',
-        inventory: listing.inventory ?? '',
-        real_estate_type: listing.real_estate_type ?? '',
-        building_size: listing.building_size ?? '',
-        lease_expiration: listing.lease_expiration ?? '',
-        employees: listing.employees ?? '',
-        facilities: listing.facilities ?? '',
-        competition: listing.competition ?? '',
-        growth_expansion: listing.growth_expansion ?? '',
-        financing_details: listing.financing_details ?? '',
-        support_training: listing.support_training ?? '',
-        reason_for_selling: listing.reason_for_selling ?? '',
-        listing_agent: listing.listing_agent ?? '',
-        agent_phone_number: listing.agent_phone_number ?? '',
-        status: listing.status ?? 'draft',
-        primary_image_index: 0,
-      });
-
-    // Load existing images
-    useEffect(() => {
-        if (listing.image_urls && listing.image_urls.length > 0) {
-            const existingImages = listing.image_urls.map((img: any) => ({
-                preview: img.url,
-                isPrimary: img.is_primary,
-                id: img.id,
-                url: img.url,
-                is_primary: img.is_primary
-            }));
-            setFiles(existingImages);
-            
-            // Set primary image index
-            const primaryIndex = existingImages.findIndex((img: any) => img.isPrimary);
-            if (primaryIndex !== -1) {
-                form.setData('primary_image_index', primaryIndex);
-            }
-        }
-    }, [listing.image_urls]);
-
-        const listingTypes = [
-        'Established Business',
-        'Asset Sale',
-        'Business Real Estate for Sale'
-        ];
-
-        const industries = [
-        'IT & Software',
-        'Healthcare',
-        'Retail & E-commerce',
-        'Education & Training',
-        'Hospitality & Tourism',
-        'Manufacturing',
-        'Finance & Insurance',
-        'Real Estate',
-        'Construction & Contractors',
-        'Food & Beverage'
-        ];
-
-        const locationConfidentialityOptions = [
-        'Show my full location (most visibility)',
-        'Show only city/region',
-        'Show zip code only',
-        'Hide location entirely'
-        ];
-
-        const realEstateTypes = ['Leased', 'Owned'];
-
-        // Handle file drop
-        const onDrop = useCallback((acceptedFiles: File[]) => {
-            // Filter out invalid files
-            const validFiles = acceptedFiles.filter(file => {
-                const isValid = file && file.size > 0 && file.type.startsWith('image/');
-                if (!isValid) {
-                    console.warn('Skipping invalid file:', file.name);
-                }
-                return isValid;
-            });
-            
-            const newFiles = validFiles.map(file => Object.assign(file, {
-                preview: URL.createObjectURL(file),
-                isPrimary: files.length === 0
-            }));
-            
-            if (newFiles.length > 0) {
-                setFiles(prevFiles => [...prevFiles, ...newFiles]);
-                
-                // If this is the first file, set it as primary
-                if (files.length === 0) {
-                    form.setData('primary_image_index', 0);
-                }
-            }
-        }, [files.length]);
-
-        // Remove a file
-        const removeFile = (index: number) => {
-            const fileToRemove = files[index];
-            
-            // If this is an existing image, add its ID to deletedImageIds
-            if (fileToRemove.id !== undefined) {
-                setDeletedImageIds(prev => [...prev, fileToRemove.id as number]);
-            }
-            
-            // Remove the file from the files array
-            const newFiles = files.filter((_, i) => i !== index);
-            setFiles(newFiles);
-            
-            // If we removed the primary image and there are still files left, set the first one as primary
-            if (fileToRemove.isPrimary && newFiles.length > 0) {
-                setFiles(prev => {
-                    const updated = [...prev];
-                    updated[0] = { ...updated[0], isPrimary: true };
-                    form.setData('primary_image_index', 0);
-                    return updated;
-                });
-            }
-        };
-
-        // Set a file as primary
-        const setPrimary = (index: number) => {
-            setFiles(prevFiles => 
-                prevFiles.map((file, i) => ({
-                    ...file,
-                    isPrimary: i === index,
-                    is_primary: i === index
-                }))
-            );
-            form.setData('primary_image_index', index);
-        };
-
-        // Clean up object URLs to avoid memory leaks
-        useEffect(() => {
-            return () => {
-                files.forEach(file => URL.revokeObjectURL(file.preview));
-            };
-        }, [files]);
-
-        const [isUploading, setIsUploading] = useState(false);
-
-        const submit = async (e: React.FormEvent) => {
-            e.preventDefault();
-            
-            if (isUploading) return;
-            
-            setIsUploading(true);
-            
-            try {
-                // Direct approach: use the original form submit with a direct object
-                const formObject = {
-                    // Explicitly include all required fields
-                    headline: form.data.headline || '',
-                    industry: form.data.industry || '',
-                    listing_type: form.data.listing_type || '',
-                    location_name: form.data.location_name || '',
-                    address: form.data.address || '',
-                    city: form.data.city || '',
-                    state: form.data.state || '',
-                    zip: form.data.zip || '',
-                    county: form.data.county || '',
-                    location_confidentiality: form.data.location_confidentiality || '',
-                    email: form.data.email || '',
-                    phone_number: form.data.phone_number || '',
-                    asking_price: form.data.asking_price ? Number(form.data.asking_price) : 0,
-                    cash_flow: form.data.cash_flow ? Number(form.data.cash_flow) : null,
-                    gross_revenue: form.data.gross_revenue ? Number(form.data.gross_revenue) : null,
-                    ebitda: form.data.ebitda || null,
-                    rent: form.data.rent || null,
-                    year_established: form.data.year_established ? Number(form.data.year_established) : null,
-                    seller_financing: form.data.seller_financing === 'true' || form.data.seller_financing === true,
-                    business_description: form.data.business_description || '',
-                    ad_id: form.data.ad_id || '',
-                    inventory: form.data.inventory || '',
-                    real_estate_type: form.data.real_estate_type || '',
-                    building_size: form.data.building_size ? Number(form.data.building_size) : null,
-                    lease_expiration: form.data.lease_expiration || null,
-                    employees: form.data.employees ? Number(form.data.employees) : null,
-                    facilities: form.data.facilities || '',
-                    competition: form.data.competition || '',
-                    growth_expansion: form.data.growth_expansion || '',
-                    financing_details: form.data.financing_details || '',
-                    support_training: form.data.support_training || '',
-                    reason_for_selling: form.data.reason_for_selling || '',
-                    listing_agent: form.data.listing_agent || '',
-                    agent_phone_number: form.data.agent_phone_number || '',
-                    status: form.data.status || 'draft',
-                    _method: 'PUT', // Laravel method spoofing
-                };
-
-                // Handle image uploads separately if needed
-                if (files.some(file => file instanceof File) || deletedImageIds.length > 0) {
-                    const formData = new FormData();
+  return (
+    <AppLayout>
+      <Head title="Edit Business Listing" />
+      
+      <div className="py-12">
+        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div className="p-6 bg-white border-b border-gray-200">
+              <h2 className="text-2xl font-semibold mb-6">Edit Business Listing</h2>
+              
+              <Stepper steps={steps} />
+              
+              <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+                {currentStep === 1 && (
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-medium">Basic Information</h3>
                     
-                    // Add all form data
-                    Object.entries(formObject).forEach(([key, value]) => {
-                        if (value !== null && value !== undefined) {
-                            formData.append(key, String(value));
-                        }
-                    });
-                    
-                    // Add deleted image IDs
-                    deletedImageIds.forEach(id => {
-                        formData.append('deleted_image_ids[]', id.toString());
-                    });
-                    
-                    // Process files similar to Create.tsx
-                    let newFileIndex = 0;
-                    let hasPrimaryId = false;
-
-                    // First handle existing images and primary selection
-                    files.forEach((file) => {
-                        if (!('id' in file)) return;
-                        
-                        if (file.isPrimary && file.id) {
-                            formData.append('primary_image_id', file.id.toString());
-                            hasPrimaryId = true;
-                        }
-                    });
-                    
-                    // Then handle new file uploads with the corrected array syntax
-                    files.forEach((file) => {
-                        // Only append new files (not the ones that were already uploaded)
-                        if (file instanceof File && file.size > 0) {
-                            try {
-                                // The exact format Laravel expects - note the quotes around 'images[]'
-                                formData.append('images[]', file);
-                                
-                                // If we don't have a primary image yet, use the first new file
-                                if (!hasPrimaryId && newFileIndex === 0 && !form.data.primary_image_id) {
-                                    formData.append('primary_image_index', '0');
-                                }
-                                
-                                console.log(`Adding new file:`, {
-                                    name: file.name,
-                                    type: file.type,
-                                    size: file.size
-                                });
-                                
-                                newFileIndex++;
-                            } catch (err) {
-                                console.error('Error appending file:', err);
-                            }
-                        }
-                    });
-                    
-                    // For debugging, check what's in the formData
-                    console.log('File count:', files.length, 'New files:', newFileIndex);
-                    for (const pair of formData.entries()) {
-                        console.log(`${pair[0]}: ${pair[1]}`);
-                    }
-                    
-                    console.log('Form data being submitted with files:', Object.fromEntries(formData.entries()));
-                    
-                    // Use the formData approach for file uploads
-                    await router.post(`/seller/listings/${listing.id}`, formData, {
-                        preserveState: false,  // Don't preserve the form state
-                        preserveScroll: false, // Don't preserve scroll position
-                        onSuccess: (page) => {
-                            // Clean up object URLs to avoid memory leaks
-                            files.forEach(file => {
-                                if (file instanceof File) {
-                                    URL.revokeObjectURL(file.preview);
-                                }
-                            });
-                            
-                            // Check if we're still on the edit page after submission
-                            if (page.component === `Seller/Listings/Edit`) {
-                                toast.success('Listing updated successfully!');
-                                // Optionally redirect to show page or listings index
-                                router.visit(route('member.listings.show', listing.id));
-                            }
-                        },
-                        onError: (errors: any) => {
-                            console.error('Error updating listing:', errors);
-                            toast.error('Failed to update listing. Please check the form for errors.');
-                        },
-                    });
-                } else {
-                    // No file uploads, use the simpler object approach
-                    console.log('Form data being submitted without files:', formObject);
-                    
-                    await router.put(route('member.listings.update', listing.id), formObject, {
-                        onSuccess: () => {
-                            toast.success('Listing updated successfully!');
-                        },
-                        onError: (errors: any) => {
-                            console.error('Error updating listing:', errors);
-                            toast.error('Failed to update listing. Please check the form for errors.');
-                        },
-                    });
-                }
-            } catch (error) {
-                console.error('Error submitting form:', error);
-                toast.error('An error occurred while submitting the form.');
-            } finally {
-                setIsUploading(false);
-            }
-        };
-
-        const cancel = () => {
-        router.get(route('member.listings.index'));
-        };
-
-        return (
-        <AppLayout>
-
-            <Head title={`Edit Listing: ${listing.headline}`} />
-
-            <div className="py-6">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    {/* Image Upload Section */}
-                    <div className="mb-8">
-                        <h2 className="text-lg font-medium text-gray-900 mb-4">Listing Images</h2>
-                        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                            <div className="space-y-1 text-center">
-                                <div className="flex text-sm text-gray-600">
-                                    <label
-                                        htmlFor="file-upload"
-                                        className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
-                                    >
-                                        <span>Upload files</span>
-                                        <input
-                                            id="file-upload"
-                                            name="file-upload"
-                                            type="file"
-                                            className="sr-only"
-                                            multiple
-                                            accept="image/*"
-                                            onChange={(e) => {
-                                                if (e.target.files) {
-                                                    onDrop(Array.from(e.target.files));
-                                                }
-                                            }}
-                                        />
-                                    </label>
-                                    <p className="pl-1">or drag and drop</p>
-                                </div>
-                                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                            </div>
-                        </div>
-                        
-                        {/* Image Previews */}
-                        {files.length > 0 && (
-                            <div className="mt-4">
-                                <h3 className="text-sm font-medium text-gray-700 mb-2">Uploaded Images</h3>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                                    {files.map((file, index) => (
-                                        <div key={index} className="relative group">
-                                            <div className={`relative aspect-square overflow-hidden rounded-lg border-2 ${
-                                                (file as any).isPrimary ? 'border-indigo-500' : 'border-gray-200'
-                                            }`}>
-                                                <img
-                                                    src={(file as any).preview}
-                                                    alt={`Preview ${index + 1}`}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                                    <div className="flex space-x-2">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setPrimary(index)}
-                                                            className="p-1.5 bg-white rounded-full shadow-md text-gray-700 hover:bg-indigo-50"
-                                                            title="Set as primary"
-                                                        >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => removeFile(index)}
-                                                            className="p-1.5 bg-white rounded-full shadow-md text-red-600 hover:bg-red-50"
-                                                            title="Remove image"
-                                                        >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {(file as any).isPrimary && (
-                                                <div className="absolute top-1 left-1 bg-indigo-500 text-white text-xs px-1.5 py-0.5 rounded">
-                                                    Primary
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <Label htmlFor="headline">Business Headline *</Label>
+                        <Input
+                          id="headline"
+                          value={form.data.headline}
+                          onChange={(e) => form.setData('headline', e.target.value)}
+                          error={form.errors.headline}
+                          placeholder="Enter a compelling business headline"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="industry">Industry *</Label>
+                        <Select value={form.data.industry} onValueChange={(value) => form.setData('industry', value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select industry" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {industries.map((industry) => (
+                              <SelectItem key={industry} value={industry}>{industry}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {form.errors.industry && (
+                          <p className="text-red-500 text-sm mt-1">{form.errors.industry}</p>
                         )}
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="listing_type">Listing Type *</Label>
+                        <Select value={form.data.listing_type} onValueChange={(value) => form.setData('listing_type', value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select listing type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {listingTypes.map((type) => (
+                              <SelectItem key={type} value={type}>{type}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {form.errors.listing_type && (
+                          <p className="text-red-500 text-sm mt-1">{form.errors.listing_type}</p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="location_name">Location Name *</Label>
+                        <Input
+                          id="location_name"
+                          value={form.data.location_name}
+                          onChange={(e) => form.setData('location_name', e.target.value)}
+                          error={form.errors.location_name}
+                          placeholder="Business location name"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="city">City *</Label>
+                        <Input
+                          id="city"
+                          value={form.data.city}
+                          onChange={(e) => form.setData('city', e.target.value)}
+                          error={form.errors.city}
+                          placeholder="City"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="state">State *</Label>
+                        <Input
+                          id="state"
+                          value={form.data.state}
+                          onChange={(e) => form.setData('state', e.target.value)}
+                          error={form.errors.state}
+                          placeholder="State"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="email">Contact Email *</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={form.data.email}
+                          onChange={(e) => form.setData('email', e.target.value)}
+                          error={form.errors.email}
+                          placeholder="contact@business.com"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="phone_number">Phone Number *</Label>
+                        <Input
+                          id="phone_number"
+                          value={form.data.phone_number}
+                          onChange={(e) => form.setData('phone_number', e.target.value)}
+                          error={form.errors.phone_number}
+                          placeholder="(555) 123-4567"
+                        />
+                      </div>
                     </div>
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 bg-white border-b border-gray-200">
-                            <h2 className="text-2xl font-semibold mb-6">Edit Business Listing</h2>
+                  </div>
+                )}
 
-                            <form onSubmit={submit} className="space-y-6">
-                                <ListingForm data={form.data} setData={form.setData} errors={form.errors}
-                                    processing={form.processing} onCancel={cancel} listingTypes={listingTypes}
-                                    industries={industries}
-                                    locationConfidentialityOptions={locationConfidentialityOptions}
-                                    realEstateTypes={realEstateTypes} />
+                {currentStep === 2 && (
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-medium">Plan Selection</h3>
+                    <p className="text-gray-600">Choose your listing plan (this is a placeholder for plan selection)</p>
+                  </div>
+                )}
 
-                                <div className="flex items-center justify-end space-x-3">
-                                    <button type="button" onClick={cancel}
-                                        className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
-                                        Cancel
-                                    </button>
-                                    <button type="submit" disabled={form.processing || isUploading}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
-                                        {form.processing || isUploading ? 'Saving…' : 'Save Listing'}
-                                    </button>
-                                </div>
-                            </form>
+                {currentStep === 3 && (
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-medium">Financial & Business Details</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <Label htmlFor="asking_price">Asking Price *</Label>
+                        <Input
+                          id="asking_price"
+                          type="number"
+                          value={form.data.asking_price}
+                          onChange={(e) => form.setData('asking_price', Number(e.target.value))}
+                          error={form.errors.asking_price}
+                          placeholder="0"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="cash_flow">Cash Flow</Label>
+                        <Input
+                          id="cash_flow"
+                          type="number"
+                          value={form.data.cash_flow}
+                          onChange={(e) => form.setData('cash_flow', Number(e.target.value))}
+                          placeholder="0"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="gross_revenue">Gross Revenue</Label>
+                        <Input
+                          id="gross_revenue"
+                          type="number"
+                          value={form.data.gross_revenue}
+                          onChange={(e) => form.setData('gross_revenue', Number(e.target.value))}
+                          placeholder="0"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="year_established">Year Established</Label>
+                        <Input
+                          id="year_established"
+                          type="number"
+                          value={form.data.year_established}
+                          onChange={(e) => form.setData('year_established', Number(e.target.value))}
+                          placeholder="2020"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Enhanced Financial Section */}
+                    <div className="border rounded-lg p-4">
+                      <button
+                        type="button"
+                        onClick={() => setIsFinancialSectionCollapsed(!isFinancialSectionCollapsed)}
+                        className="flex items-center justify-between w-full text-left"
+                      >
+                        <h4 className="text-md font-medium">Enhanced Financial Details</h4>
+                        <span>{isFinancialSectionCollapsed ? '▼' : '▲'}</span>
+                      </button>
+                      
+                      {!isFinancialSectionCollapsed && (
+                        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="ffe">Furniture, Fixtures & Equipment (FFE)</Label>
+                            <Input
+                              id="ffe"
+                              type="number"
+                              value={form.data.ffe}
+                              onChange={(e) => form.setData('ffe', Number(e.target.value))}
+                              placeholder="0"
+                            />
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor="inventory_value">Inventory Value</Label>
+                            <Input
+                              id="inventory_value"
+                              type="number"
+                              value={form.data.inventory_value}
+                              onChange={(e) => form.setData('inventory_value', Number(e.target.value))}
+                              placeholder="0"
+                            />
+                          </div>
+                          
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="inventory_included_in_asking_price"
+                              checked={form.data.inventory_included_in_asking_price}
+                              onChange={(e) => form.setData('inventory_included_in_asking_price', e.target.checked)}
+                            />
+                            <Label htmlFor="inventory_included_in_asking_price">Inventory included in asking price</Label>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="seller_financing_available"
+                              checked={form.data.seller_financing_available}
+                              onChange={(e) => form.setData('seller_financing_available', e.target.checked)}
+                            />
+                            <Label htmlFor="seller_financing_available">Seller financing available</Label>
+                          </div>
                         </div>
+                      )}
                     </div>
+
+                    {/* Enhanced Business Details Section */}
+                    <div className="border rounded-lg p-4">
+                      <button
+                        type="button"
+                        onClick={() => setIsBusinessDetailsSectionCollapsed(!isBusinessDetailsSectionCollapsed)}
+                        className="flex items-center justify-between w-full text-left"
+                      >
+                        <h4 className="text-md font-medium">Enhanced Business Details</h4>
+                        <span>{isBusinessDetailsSectionCollapsed ? '▼' : '▲'}</span>
+                      </button>
+                      
+                      {!isBusinessDetailsSectionCollapsed && (
+                        <div className="mt-4 space-y-4">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="absentee_owner"
+                                checked={form.data.absentee_owner}
+                                onChange={(e) => form.setData('absentee_owner', e.target.checked)}
+                              />
+                              <Label htmlFor="absentee_owner">Absentee Owner</Label>
+                            </div>
+                            
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="home_based"
+                                checked={form.data.home_based}
+                                onChange={(e) => form.setData('home_based', e.target.checked)}
+                              />
+                              <Label htmlFor="home_based">Home Based</Label>
+                            </div>
+                            
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="relocatable"
+                                checked={form.data.relocatable}
+                                onChange={(e) => form.setData('relocatable', e.target.checked)}
+                              />
+                              <Label htmlFor="relocatable">Relocatable</Label>
+                            </div>
+                            
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="established_franchise"
+                                checked={form.data.established_franchise}
+                                onChange={(e) => form.setData('established_franchise', e.target.checked)}
+                              />
+                              <Label htmlFor="established_franchise">Established Franchise</Label>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor="business_website">Business Website</Label>
+                            <Input
+                              id="business_website"
+                              type="url"
+                              value={form.data.business_website}
+                              onChange={(e) => form.setData('business_website', e.target.value)}
+                              placeholder="https://business.com"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {currentStep === 4 && (
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-medium">Business Description</h3>
+                    
+                    <div>
+                      <Label htmlFor="business_description">Business Description *</Label>
+                      <textarea
+                        id="business_description"
+                        value={form.data.business_description}
+                        onChange={(e) => form.setData('business_description', e.target.value)}
+                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        rows={8}
+                        placeholder="Describe your business in detail..."
+                      />
+                      {form.errors.business_description && (
+                        <p className="text-red-500 text-sm mt-1">{form.errors.business_description}</p>
+                      )}
+                      <p className="text-gray-500 text-sm mt-1">
+                        {form.data.business_description.length} characters
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between pt-6 border-t">
+                  <div className="flex space-x-3">
+                    {currentStep > 1 && (
+                      <button
+                        type="button"
+                        onClick={prevStep}
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                      >
+                        Previous
+                      </button>
+                    )}
+                    
+                    <button type="button" onClick={cancel}
+                      className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                      Cancel
+                    </button>
+                  </div>
+                  
+                  <div className="flex space-x-3">
+                    {currentStep < 4 ? (
+                      <button
+                        type="button"
+                        onClick={nextStep}
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      >
+                        Next
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        disabled={form.processing || isUploading}
+                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                      >
+                        {form.processing || isUploading ? 'Updating...' : 'Update Listing'}
+                      </button>
+                    )}
+                  </div>
                 </div>
+              </form>
             </div>
-        </AppLayout>
-        );
-        }
+          </div>
+        </div>
+      </div>
+    </AppLayout>
+  );
+}

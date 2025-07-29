@@ -177,9 +177,11 @@ const prepareFormData = (data: FormData): Record<string, any> => {
     }, [listing.image_urls]);
 
         const listingTypes = [
-        'Established Business',
+        'Established Business for Sale',
         'Asset Sale',
-        'Business Real Estate for Sale'
+        'Business Real Estate for Sale (No Business Included)',
+        'Business Real Estate for Lease (No Business Included)',
+        'Startup Opportunity'
         ];
 
         const industries = [
