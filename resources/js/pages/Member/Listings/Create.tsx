@@ -106,9 +106,9 @@ const { auth } = usePage<SharedData>().props;
         const realEstateTypes = ['Leased', 'Owned'];
 
         const form = useForm<FormData>({
-            listing_type: '',
-            industry: '',
-            location_confidentiality: '',
+            listing_type: 'Established Business for Sale', // Default to first option
+            industry: 'IT & Software', // Default to first option
+            location_confidentiality: 'Public', // Default to first option
             real_estate_type: '',
             headline: '',
             location_name: '',
@@ -117,6 +117,8 @@ const { auth } = usePage<SharedData>().props;
             state: '',
             zip: '',
             county: '',
+            email: auth.user.email || '', // Use user's email as default
+            phone_number: auth.user.phone || '', // Use user's phone as default
             asking_price: 0,
             cash_flow: 0,
             gross_revenue: 0,
@@ -151,8 +153,6 @@ const { auth } = usePage<SharedData>().props;
             financing_details: '',
             support_training: '',
             other_details: '',
-            email: '',
-            phone_number: '',
             website: '',
             facebook: '',
             twitter: '',

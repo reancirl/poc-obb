@@ -17,17 +17,23 @@ interface Listing {
   industry: string;
   listing_type: string;
   location_name: string;
+  address: string;
   city: string;
   state: string;
+  zip: string;
+  county: string | null;
   location_confidentiality: string;
   asking_price: number;
   cash_flow: number | null;
   gross_revenue: number | null;
   ebitda: string | null;
+  rent: number | null;
   year_established: number | null;
   business_description: string | null;
+  inventory: number | null;
   real_estate_type: string | null;
   building_size: number | null;
+  lease_expiration: string | null;
   employees: number | null;
   facilities: string | null;
   competition: string | null;
@@ -35,9 +41,42 @@ interface Listing {
   financing_details: string | null;
   support_training: string | null;
   reason_for_selling: string | null;
+  listing_agent: string | null;
+  agent_phone_number: string | null;
+  phone_number: string | null;
+  
+  // Enhanced financial fields
+  ffe: number | null;
+  inventory_value: number | null;
+  seller_financing_available: boolean | null;
+  inventory_included_in_asking_price: boolean | null;
+  financing_notes: string | null;
+  
+  // Business details
+  absentee_owner: boolean | null;
+  home_based: boolean | null;
+  relocatable: boolean | null;
+  established_franchise: boolean | null;
+  business_website: string | null;
+  website_confidential: boolean | null;
+  
+  // Social media and online presence
+  website: string | null;
+  facebook: string | null;
+  twitter: string | null;
+  linkedin: string | null;
+  instagram: string | null;
+  youtube: string | null;
+  other_social_media: string | null;
+  
+  // Additional information
+  other_details: string | null;
+  photos: string | null;
+  videos: string | null;
+  documents: string | null;
+  
   image_urls: Image[];
   email: string;
-  listing_agent: string | null;
 }
 
 interface Props {
@@ -84,15 +123,63 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
     }
   }, [auth.user]);
 
-  const formatCurrency = (value: number | null) => {
-    if (value === null) return 'N/A';
+  const formatCurrency = (amount: number | null) => {
+    if (amount === null || amount === undefined) return 'Not specified';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(value);
+    }).format(amount);
   };
+
+  // Helper function to determine what location information to show based on confidentiality setting
+  const getLocationDisplay = () => {
+    switch (listing.location_confidentiality) {
+      case 'Show my full location (most visibility)':
+        return {
+          showAddress: true,
+          showCity: true,
+          showZip: true,
+          showCounty: true,
+          locationText: `${listing.address}, ${listing.city}, ${listing.state} ${listing.zip}${listing.county ? `, ${listing.county} County` : ''}`
+        };
+      case 'Show only city/region':
+        return {
+          showAddress: false,
+          showCity: true,
+          showZip: false,
+          showCounty: true,
+          locationText: `${listing.city}, ${listing.state}${listing.county ? `, ${listing.county} County` : ''}`
+        };
+      case 'Show zip code only':
+        return {
+          showAddress: false,
+          showCity: false,
+          showZip: true,
+          showCounty: false,
+          locationText: `${listing.zip}, ${listing.state}`
+        };
+      case 'Hide location entirely':
+        return {
+          showAddress: false,
+          showCity: false,
+          showZip: false,
+          showCounty: false,
+          locationText: 'Location confidential'
+        };
+      default:
+        return {
+          showAddress: false,
+          showCity: true,
+          showZip: false,
+          showCounty: false,
+          locationText: `${listing.city}, ${listing.state}`
+        };
+    }
+  };
+
+  const locationDisplay = getLocationDisplay();
 
   const renderDetail = (label: string, value: string | number | null, isCurrency = false) => {
     if (value === null || value === '') return null;
@@ -198,7 +285,7 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
               <div>
                 <div className="text-sm font-medium mb-1">{listing.industry} • {listing.listing_type}</div>
                 <h1 className="text-2xl md:text-3xl font-bold">{listing.headline}</h1>
-                <p className="text-blue-100 mt-1">{listing.city}, {listing.state}</p>
+                <p className="text-blue-100 mt-1">{locationDisplay.locationText}</p>
               </div>
               <div className="mt-4 md:mt-0 text-right flex flex-col items-end">
                 <div className="flex items-center mb-2">
@@ -269,7 +356,7 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
                   <span>•</span>
                   <span>{listing.listing_type}</span>
                   <span>•</span>
-                  <span>{listing.city}, {listing.state}</span>
+                  <span>{locationDisplay.locationText}</span>
                 </div>
                 <div className="mt-2 text-2xl font-bold" style={{ color: '#D5AD36' }}>
                   {formatCurrency(listing.asking_price)}
@@ -349,11 +436,36 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
                     <div className="p-6">
                       <dl className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {renderDetail('Asking Price', listing.asking_price, true)}
-                        {renderDetail('Cash Flow', listing.cash_flow, true)}
+                        {renderDetail('Cash Flow (SDE)', listing.cash_flow, true)}
                         {renderDetail('Gross Revenue', listing.gross_revenue, true)}
                         {renderDetail('EBITDA', listing.ebitda)}
+                        {renderDetail('FF&E (Furniture, Fixtures & Equipment)', listing.ffe, true)}
+                        {renderDetail('Inventory Value', listing.inventory_value, true)}
+                        {renderDetail('Rent', listing.rent, true)}
                         {renderDetail('Year Established', listing.year_established)}
+                        {listing.seller_financing_available !== null && (
+                          <div>
+                            <dt className="text-sm font-medium text-gray-500">Seller Financing Available</dt>
+                            <dd className="mt-1 text-sm text-gray-900">
+                              {listing.seller_financing_available ? 'Yes' : 'No'}
+                            </dd>
+                          </div>
+                        )}
+                        {listing.inventory_included_in_asking_price !== null && (
+                          <div>
+                            <dt className="text-sm font-medium text-gray-500">Inventory Included in Asking Price</dt>
+                            <dd className="mt-1 text-sm text-gray-900">
+                              {listing.inventory_included_in_asking_price ? 'Yes' : 'No'}
+                            </dd>
+                          </div>
+                        )}
                       </dl>
+                      {listing.financing_notes && (
+                        <div className="mt-6 pt-6 border-t border-gray-200">
+                          <h3 className="text-sm font-medium text-gray-900 mb-2">Financing Notes</h3>
+                          <p className="text-sm text-gray-700 whitespace-pre-line">{listing.financing_notes}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                   
@@ -364,12 +476,61 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
                     </div>
                     <div className="p-6">
                       <dl className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {renderDetail('Location', `${listing.city}, ${listing.state}`)}
+                        {renderDetail('Location', locationDisplay.locationText)}
                         {renderDetail('Industry', listing.industry)}
                         {renderDetail('Listing Type', listing.listing_type)}
-                        {renderDetail('Real Estate', listing.real_estate_type)}
+                        {renderDetail('Real Estate Type', listing.real_estate_type)}
                         {renderDetail('Building Size', listing.building_size ? `${listing.building_size} sq ft` : null)}
+                        {renderDetail('Lease Expiration', listing.lease_expiration)}
                         {renderDetail('Employees', listing.employees)}
+                        {renderDetail('Inventory', listing.inventory, true)}
+                        {listing.absentee_owner !== null && (
+                          <div>
+                            <dt className="text-sm font-medium text-gray-500">Absentee Owner</dt>
+                            <dd className="mt-1 text-sm text-gray-900">
+                              {listing.absentee_owner ? 'Yes' : 'No'}
+                            </dd>
+                          </div>
+                        )}
+                        {listing.home_based !== null && (
+                          <div>
+                            <dt className="text-sm font-medium text-gray-500">Home-Based Business</dt>
+                            <dd className="mt-1 text-sm text-gray-900">
+                              {listing.home_based ? 'Yes' : 'No'}
+                            </dd>
+                          </div>
+                        )}
+                        {listing.relocatable !== null && (
+                          <div>
+                            <dt className="text-sm font-medium text-gray-500">Relocatable</dt>
+                            <dd className="mt-1 text-sm text-gray-900">
+                              {listing.relocatable ? 'Yes' : 'No'}
+                            </dd>
+                          </div>
+                        )}
+                        {listing.established_franchise !== null && (
+                          <div>
+                            <dt className="text-sm font-medium text-gray-500">Established Franchise</dt>
+                            <dd className="mt-1 text-sm text-gray-900">
+                              {listing.established_franchise ? 'Yes' : 'No'}
+                            </dd>
+                          </div>
+                        )}
+                        {listing.business_website && (
+                          <div>
+                            <dt className="text-sm font-medium text-gray-500">Business Website</dt>
+                            <dd className="mt-1 text-sm text-gray-900">
+                              {listing.website_confidential ? 
+                                'Available upon request (confidential)' : 
+                                <a href={listing.business_website.startsWith('http') ? listing.business_website : `https://${listing.business_website}`} 
+                                   target="_blank" rel="noopener noreferrer" 
+                                   className="text-blue-600 hover:text-blue-800 underline">
+                                  {listing.business_website}
+                                </a>
+                              }
+                            </dd>
+                          </div>
+                        )}
                       </dl>
                     </div>
                   </div>
@@ -415,6 +576,147 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
                       </div>
                       <div className="p-6">
                         <p className="text-gray-700 whitespace-pre-line">{listing.reason_for_selling}</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Social Media & Online Presence */}
+                  {(listing.website || listing.facebook || listing.twitter || listing.linkedin || listing.instagram || listing.youtube || listing.other_social_media) && (
+                    <div className="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                      <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                        <h2 className="text-xl font-bold text-gray-900">Social Media & Online Presence</h2>
+                      </div>
+                      <div className="p-6">
+                        <dl className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {listing.website && (
+                            <div>
+                              <dt className="text-sm font-medium text-gray-500">Website</dt>
+                              <dd className="mt-1 text-sm text-gray-900">
+                                <a href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`} 
+                                   target="_blank" rel="noopener noreferrer" 
+                                   className="text-blue-600 hover:text-blue-800 underline">
+                                  {listing.website}
+                                </a>
+                              </dd>
+                            </div>
+                          )}
+                          {listing.facebook && (
+                            <div>
+                              <dt className="text-sm font-medium text-gray-500">Facebook</dt>
+                              <dd className="mt-1 text-sm text-gray-900">
+                                <a href={listing.facebook.startsWith('http') ? listing.facebook : `https://${listing.facebook}`} 
+                                   target="_blank" rel="noopener noreferrer" 
+                                   className="text-blue-600 hover:text-blue-800 underline">
+                                  {listing.facebook}
+                                </a>
+                              </dd>
+                            </div>
+                          )}
+                          {listing.twitter && (
+                            <div>
+                              <dt className="text-sm font-medium text-gray-500">Twitter</dt>
+                              <dd className="mt-1 text-sm text-gray-900">
+                                <a href={listing.twitter.startsWith('http') ? listing.twitter : `https://${listing.twitter}`} 
+                                   target="_blank" rel="noopener noreferrer" 
+                                   className="text-blue-600 hover:text-blue-800 underline">
+                                  {listing.twitter}
+                                </a>
+                              </dd>
+                            </div>
+                          )}
+                          {listing.linkedin && (
+                            <div>
+                              <dt className="text-sm font-medium text-gray-500">LinkedIn</dt>
+                              <dd className="mt-1 text-sm text-gray-900">
+                                <a href={listing.linkedin.startsWith('http') ? listing.linkedin : `https://${listing.linkedin}`} 
+                                   target="_blank" rel="noopener noreferrer" 
+                                   className="text-blue-600 hover:text-blue-800 underline">
+                                  {listing.linkedin}
+                                </a>
+                              </dd>
+                            </div>
+                          )}
+                          {listing.instagram && (
+                            <div>
+                              <dt className="text-sm font-medium text-gray-500">Instagram</dt>
+                              <dd className="mt-1 text-sm text-gray-900">
+                                <a href={listing.instagram.startsWith('http') ? listing.instagram : `https://${listing.instagram}`} 
+                                   target="_blank" rel="noopener noreferrer" 
+                                   className="text-blue-600 hover:text-blue-800 underline">
+                                  {listing.instagram}
+                                </a>
+                              </dd>
+                            </div>
+                          )}
+                          {listing.youtube && (
+                            <div>
+                              <dt className="text-sm font-medium text-gray-500">YouTube</dt>
+                              <dd className="mt-1 text-sm text-gray-900">
+                                <a href={listing.youtube.startsWith('http') ? listing.youtube : `https://${listing.youtube}`} 
+                                   target="_blank" rel="noopener noreferrer" 
+                                   className="text-blue-600 hover:text-blue-800 underline">
+                                  {listing.youtube}
+                                </a>
+                              </dd>
+                            </div>
+                          )}
+                          {listing.other_social_media && (
+                            <div className="md:col-span-2">
+                              <dt className="text-sm font-medium text-gray-500">Other Social Media</dt>
+                              <dd className="mt-1 text-sm text-gray-900 whitespace-pre-line">{listing.other_social_media}</dd>
+                            </div>
+                          )}
+                        </dl>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Additional Information */}
+                  {(listing.other_details || listing.photos || listing.videos || listing.documents) && (
+                    <div className="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                      <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                        <h2 className="text-xl font-bold text-gray-900">Additional Information</h2>
+                      </div>
+                      <div className="p-6 space-y-6">
+                        {listing.other_details && (
+                          <div>
+                            <h3 className="text-sm font-medium text-gray-900 mb-2">Other Details</h3>
+                            <p className="text-sm text-gray-700 whitespace-pre-line">{listing.other_details}</p>
+                          </div>
+                        )}
+                        {listing.photos && (
+                          <div>
+                            <h3 className="text-sm font-medium text-gray-900 mb-2">Photos</h3>
+                            <p className="text-sm text-gray-700 whitespace-pre-line">{listing.photos}</p>
+                          </div>
+                        )}
+                        {listing.videos && (
+                          <div>
+                            <h3 className="text-sm font-medium text-gray-900 mb-2">Videos</h3>
+                            <p className="text-sm text-gray-700 whitespace-pre-line">{listing.videos}</p>
+                          </div>
+                        )}
+                        {listing.documents && (
+                          <div>
+                            <h3 className="text-sm font-medium text-gray-900 mb-2">Documents</h3>
+                            <p className="text-sm text-gray-700 whitespace-pre-line">{listing.documents}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Listing Agent Information */}
+                  {(listing.listing_agent || listing.agent_phone_number) && (
+                    <div className="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                      <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                        <h2 className="text-xl font-bold text-gray-900">Listing Agent</h2>
+                      </div>
+                      <div className="p-6">
+                        <dl className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {renderDetail('Agent Name', listing.listing_agent)}
+                          {renderDetail('Agent Phone', listing.agent_phone_number)}
+                        </dl>
                       </div>
                     </div>
                   )}

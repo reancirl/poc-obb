@@ -187,13 +187,33 @@ export default function ShowListing({ listing }: Props) {
                       {renderDetail('EBITDA', listing.ebitda)}
                       {renderDetail('Rent', listing.rent)}
                       {renderDetail('Year Established', listing.year_established)}
+                      {renderDetail('FF&E (Furniture, Fixtures & Equipment)', (listing as any).ffe, true)}
+                      {renderDetail('Inventory Value', (listing as any).inventory_value, true)}
                       <div className="py-2">
                         <dt className="text-sm font-medium text-gray-500">Seller Financing</dt>
                         <dd className="mt-1 text-sm text-gray-900">
                           {listing.seller_financing ? 'Yes' : 'No'}
                         </dd>
                       </div>
+                      <div className="py-2">
+                        <dt className="text-sm font-medium text-gray-500">Seller Financing Available</dt>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          {(listing as any).seller_financing_available ? 'Yes' : 'No'}
+                        </dd>
+                      </div>
+                      <div className="py-2">
+                        <dt className="text-sm font-medium text-gray-500">Inventory Included in Asking Price</dt>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          {(listing as any).inventory_included_in_asking_price ? 'Yes' : 'No'}
+                        </dd>
+                      </div>
                     </dl>
+                    {(listing as any).financing_notes && (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <h4 className="text-sm font-medium text-gray-500 mb-2">Financing Notes</h4>
+                        <p className="text-gray-700 whitespace-pre-line">{(listing as any).financing_notes}</p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="bg-gray-50 p-6 rounded-lg">
@@ -212,14 +232,56 @@ export default function ShowListing({ listing }: Props) {
                   </div>
 
                   <div className="bg-gray-50 p-6 rounded-lg">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Business Details</h3>
+                    <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="py-2">
+                        <dt className="text-sm font-medium text-gray-500">Absentee Owner</dt>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          {(listing as any).absentee_owner ? 'Yes' : 'No'}
+                        </dd>
+                      </div>
+                      <div className="py-2">
+                        <dt className="text-sm font-medium text-gray-500">Home-Based Business</dt>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          {(listing as any).home_based ? 'Yes' : 'No'}
+                        </dd>
+                      </div>
+                      <div className="py-2">
+                        <dt className="text-sm font-medium text-gray-500">Relocatable</dt>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          {(listing as any).relocatable ? 'Yes' : 'No'}
+                        </dd>
+                      </div>
+                      <div className="py-2">
+                        <dt className="text-sm font-medium text-gray-500">Established Franchise</dt>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          {(listing as any).established_franchise ? 'Yes' : 'No'}
+                        </dd>
+                      </div>
+                      {renderDetail('Employees', listing.employees)}
+                      {renderDetail('Ad ID', listing.ad_id)}
+                    </dl>
+                    {(listing as any).business_website && (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <h4 className="text-sm font-medium text-gray-500 mb-2">Business Website</h4>
+                        <p className="text-gray-700">
+                          {(listing as any).keep_website_confidential ? 
+                            'Website available upon request (confidential)' : 
+                            (listing as any).business_website
+                          }
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="bg-gray-50 p-6 rounded-lg">
                     <h3 className="text-lg font-medium text-gray-900 mb-4">Property Details</h3>
                     <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {renderDetail('Real Estate Type', listing.real_estate_type)}
+                      {renderDetail('Real Estate Property Type', (listing as any).real_estate_property_type)}
                       {renderDetail('Building Size', listing.building_size ? `${listing.building_size} sq ft` : null)}
                       {renderDetail('Lease Expiration', listing.lease_expiration)}
                       {renderDetail('Inventory', listing.inventory)}
-                      {renderDetail('Employees', listing.employees)}
-                      {renderDetail('Ad ID', listing.ad_id)}
                     </dl>
                   </div>
 
@@ -262,6 +324,128 @@ export default function ShowListing({ listing }: Props) {
                     <div className="bg-gray-50 p-6 rounded-lg">
                       <h3 className="text-lg font-medium text-gray-900 mb-4">Reason for Selling</h3>
                       <p className="text-gray-700">{listing.reason_for_selling}</p>
+                    </div>
+                  )}
+
+                  {((listing as any).facilities_assets || (listing as any).market_competition) && (
+                    <div className="bg-gray-50 p-6 rounded-lg">
+                      <h3 className="text-lg font-medium text-gray-900 mb-4">Additional Business Information</h3>
+                      {(listing as any).facilities_assets && (
+                        <div className="mb-4">
+                          <h4 className="text-sm font-medium text-gray-500 mb-2">Facilities & Assets</h4>
+                          <p className="text-gray-700 whitespace-pre-line">{(listing as any).facilities_assets}</p>
+                        </div>
+                      )}
+                      {(listing as any).market_competition && (
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-500 mb-2">Market & Competition</h4>
+                          <p className="text-gray-700 whitespace-pre-line">{(listing as any).market_competition}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {((listing as any).website || (listing as any).facebook || (listing as any).twitter || (listing as any).linkedin || (listing as any).instagram || (listing as any).youtube || (listing as any).other_social_media) && (
+                    <div className="bg-gray-50 p-6 rounded-lg">
+                      <h3 className="text-lg font-medium text-gray-900 mb-4">Online Presence</h3>
+                      <dl className="grid grid-cols-1 gap-4">
+                        {(listing as any).website && (
+                          <div className="py-2">
+                            <dt className="text-sm font-medium text-gray-500">Website</dt>
+                            <dd className="mt-1 text-sm text-gray-900">
+                              <a href={(listing as any).website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
+                                {(listing as any).website}
+                              </a>
+                            </dd>
+                          </div>
+                        )}
+                        {(listing as any).facebook && (
+                          <div className="py-2">
+                            <dt className="text-sm font-medium text-gray-500">Facebook</dt>
+                            <dd className="mt-1 text-sm text-gray-900">
+                              <a href={(listing as any).facebook} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
+                                {(listing as any).facebook}
+                              </a>
+                            </dd>
+                          </div>
+                        )}
+                        {(listing as any).twitter && (
+                          <div className="py-2">
+                            <dt className="text-sm font-medium text-gray-500">Twitter</dt>
+                            <dd className="mt-1 text-sm text-gray-900">
+                              <a href={(listing as any).twitter} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
+                                {(listing as any).twitter}
+                              </a>
+                            </dd>
+                          </div>
+                        )}
+                        {(listing as any).linkedin && (
+                          <div className="py-2">
+                            <dt className="text-sm font-medium text-gray-500">LinkedIn</dt>
+                            <dd className="mt-1 text-sm text-gray-900">
+                              <a href={(listing as any).linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
+                                {(listing as any).linkedin}
+                              </a>
+                            </dd>
+                          </div>
+                        )}
+                        {(listing as any).instagram && (
+                          <div className="py-2">
+                            <dt className="text-sm font-medium text-gray-500">Instagram</dt>
+                            <dd className="mt-1 text-sm text-gray-900">
+                              <a href={(listing as any).instagram} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
+                                {(listing as any).instagram}
+                              </a>
+                            </dd>
+                          </div>
+                        )}
+                        {(listing as any).youtube && (
+                          <div className="py-2">
+                            <dt className="text-sm font-medium text-gray-500">YouTube</dt>
+                            <dd className="mt-1 text-sm text-gray-900">
+                              <a href={(listing as any).youtube} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
+                                {(listing as any).youtube}
+                              </a>
+                            </dd>
+                          </div>
+                        )}
+                        {(listing as any).other_social_media && (
+                          <div className="py-2">
+                            <dt className="text-sm font-medium text-gray-500">Other Social Media</dt>
+                            <dd className="mt-1 text-sm text-gray-900 whitespace-pre-line">{(listing as any).other_social_media}</dd>
+                          </div>
+                        )}
+                      </dl>
+                    </div>
+                  )}
+
+                  {((listing as any).other_details || (listing as any).photos || (listing as any).videos || (listing as any).documents) && (
+                    <div className="bg-gray-50 p-6 rounded-lg">
+                      <h3 className="text-lg font-medium text-gray-900 mb-4">Additional Information</h3>
+                      {(listing as any).other_details && (
+                        <div className="mb-4">
+                          <h4 className="text-sm font-medium text-gray-500 mb-2">Other Details</h4>
+                          <p className="text-gray-700 whitespace-pre-line">{(listing as any).other_details}</p>
+                        </div>
+                      )}
+                      {(listing as any).photos && (
+                        <div className="mb-4">
+                          <h4 className="text-sm font-medium text-gray-500 mb-2">Photos</h4>
+                          <p className="text-gray-700">{(listing as any).photos}</p>
+                        </div>
+                      )}
+                      {(listing as any).videos && (
+                        <div className="mb-4">
+                          <h4 className="text-sm font-medium text-gray-500 mb-2">Videos</h4>
+                          <p className="text-gray-700">{(listing as any).videos}</p>
+                        </div>
+                      )}
+                      {(listing as any).documents && (
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-500 mb-2">Documents</h4>
+                          <p className="text-gray-700">{(listing as any).documents}</p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
