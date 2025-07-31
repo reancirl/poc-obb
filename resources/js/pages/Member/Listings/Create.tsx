@@ -202,11 +202,21 @@ const { auth } = usePage<SharedData>().props;
             ];
 
             const submit = async (e: React.FormEvent) => {
+            console.log('🚀 SUBMIT FUNCTION CALLED - Step 4 Debug');
+            console.log('📋 Current form data:', form.data);
+            console.log('📁 Files array:', files);
+            console.log('⏳ Is uploading:', isUploading);
+            console.log('📍 Current step:', currentStep);
+            
             e.preventDefault();
 
-            if (isUploading) return;
+            if (isUploading) {
+                console.log('❌ BLOCKED: Already uploading, returning early');
+                return;
+            }
 
             // Frontend validation before submission
+            console.log('🔍 Starting frontend validation...');
             const validationErrors: Record<string, string> = {};
             
             // Check required fields
@@ -254,7 +264,12 @@ const { auth } = usePage<SharedData>().props;
             });
             
             // If there are validation errors, show them and stop submission
+            console.log('🔍 Validation errors found:', validationErrors);
+            console.log('🔢 Number of validation errors:', Object.keys(validationErrors).length);
+            
             if (Object.keys(validationErrors).length > 0) {
+                console.log('❌ VALIDATION FAILED - Stopping submission');
+                console.log('📝 Specific validation errors:', validationErrors);
                 // Set form errors
                 Object.keys(validationErrors).forEach(key => {
                     form.setError(key, validationErrors[key]);
@@ -263,16 +278,21 @@ const { auth } = usePage<SharedData>().props;
                 return;
             }
             
+            console.log('✅ Validation passed - Proceeding with submission');
             // Clear any existing errors
             form.clearErrors();
 
+            console.log('⏳ Setting isUploading to true');
             setIsUploading(true);
 
             try {
+            console.log('📦 Creating FormData object...');
             const formData = new FormData();
 
+            console.log('📋 Processing form data entries...');
             // Append all form data with proper type handling and validation
             Object.entries(form.data).forEach(([key, value]) => {
+                console.log(`🔑 Processing field: ${key} = ${value} (type: ${typeof value})`);
                 // Skip null, undefined, or empty string values for optional fields
                 if (value === null || value === undefined) {
                     return;
@@ -354,12 +374,17 @@ const { auth } = usePage<SharedData>().props;
             console.log(`${pair[0]}: ${pair[1]}`);
             }
 
+            console.log('🚀 About to submit form to backend...');
+            console.log('🎯 Route:', route('member.listings.store'));
+            console.log('📦 FormData ready for submission');
+            
             await router.post(route('member.listings.store'), formData, {
             forceFormData: true,
             preserveState: false, // Don't preserve the form state
             preserveScroll: false, // Don't preserve scroll position
             onSuccess: (page: any) => {
-            console.log('Success response:', page);
+            console.log('✅ SUCCESS: Form submitted successfully!');
+            console.log('📄 Success response:', page);
 
             // Clean up object URLs to avoid memory leaks
             files.forEach(file => URL.revokeObjectURL(file.preview));
@@ -373,20 +398,29 @@ const { auth } = usePage<SharedData>().props;
             }
             },
             onError: (errors: any) => {
-            console.error('Error response:', errors);
+            console.log('❌ SUBMISSION ERROR OCCURRED');
+            console.error('🔥 Full error object:', errors);
+            console.error('📊 Error keys:', Object.keys(errors || {}));
             if (errors?.response) {
-            console.error('Response data:', errors.response);
+            console.error('📡 Response data:', errors.response);
             }
             if (errors?.message) {
-            console.error('Error message:', errors.message);
+            console.error('💬 Error message:', errors.message);
+            }
+            if (errors?.data) {
+            console.error('📋 Error data:', errors.data);
             }
             toast.error('Failed to create listing. Please check the form for errors.');
             },
             });
             } catch (error) {
-            console.error('Error submitting form:', error);
+            console.log('🚨 CATCH BLOCK: Exception during submission');
+            console.error('⚠️ Caught error:', error);
+            console.error('🔍 Error type:', typeof error);
+            console.error('📝 Error details:', JSON.stringify(error, null, 2));
             toast.error('An error occurred while submitting the form.');
             } finally {
+            console.log('🏁 FINALLY: Cleaning up submission state');
             setIsUploading(false);
             }
             };
