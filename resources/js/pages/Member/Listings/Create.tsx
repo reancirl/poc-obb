@@ -395,13 +395,149 @@ const { auth } = usePage<SharedData>().props;
             router.get(route('member.listings.index'));
             };
 
-            const handleNext = () => {
-            setCurrentStep(prev => prev + 1);
-            };
+            // Step-specific validation functions
+    const validateStep1 = (): boolean => {
+        console.log('🔍 Validating Step 1...');
+        console.log('📋 Form data:', form.data);
+        const errors: Record<string, string> = {};
+        
+        // Required fields for Step 1 (Basic Information)
+        if (!form.data.industry || (typeof form.data.industry === 'string' && form.data.industry.trim() === '')) {
+            errors.industry = 'Industry is required';
+        }
+        if (!form.data.listing_type || (typeof form.data.listing_type === 'string' && form.data.listing_type.trim() === '')) {
+            errors.listing_type = 'Listing type is required';
+        }
+        if (!form.data.headline || (typeof form.data.headline === 'string' && form.data.headline.trim() === '')) {
+            errors.headline = 'Headline is required';
+        }
+        if (!form.data.location_name || (typeof form.data.location_name === 'string' && form.data.location_name.trim() === '')) {
+            errors.location_name = 'Location name is required';
+        }
+        if (!form.data.address || (typeof form.data.address === 'string' && form.data.address.trim() === '')) {
+            errors.address = 'Address is required';
+        }
+        if (!form.data.city || (typeof form.data.city === 'string' && form.data.city.trim() === '')) {
+            errors.city = 'City is required';
+        }
+        if (!form.data.state || (typeof form.data.state === 'string' && form.data.state.trim() === '')) {
+            errors.state = 'State is required';
+        }
+        if (!form.data.zip || (typeof form.data.zip === 'string' && form.data.zip.trim() === '')) {
+            errors.zip = 'ZIP code is required';
+        }
+        if (!form.data.location_confidentiality || (typeof form.data.location_confidentiality === 'string' && form.data.location_confidentiality.trim() === '')) {
+            errors.location_confidentiality = 'Location confidentiality is required';
+        }
+        if (!form.data.email || (typeof form.data.email === 'string' && form.data.email.trim() === '')) {
+            errors.email = 'Email is required';
+        }
+        
+        // Email format validation
+        if (form.data.email && typeof form.data.email === 'string') {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(form.data.email)) {
+                errors.email = 'Please enter a valid email address';
+            }
+        }
+        
+        if (Object.keys(errors).length > 0) {
+            console.log('❌ Step 1 validation failed with errors:', errors);
+            // Set form errors
+            Object.keys(errors).forEach(key => {
+                form.setError(key, errors[key]);
+            });
+            toast.error('Please fix the errors before proceeding to the next step.');
+            return false;
+        }
+        
+        console.log('✅ Step 1 validation passed!');
+        // Clear errors if validation passes
+        form.clearErrors();
+        return true;
+    };
+    
+    const validateStep2 = (): boolean => {
+        // Step 2 is plan selection - no specific validation needed as it's handled by PlanSelection component
+        return true;
+    };
+    
+    const validateStep3 = (): boolean => {
+        console.log('🔍 Validating Step 3...');
+        console.log('📋 Form data for Step 3:', form.data);
+        const errors: Record<string, string> = {};
+        
+        // Validate asking price (required and must be positive)
+        if (!form.data.asking_price || (typeof form.data.asking_price === 'number' && form.data.asking_price <= 0)) {
+            errors.asking_price = 'Asking price is required and must be greater than 0';
+        }
+        
+        // Validate numeric fields if they have values
+        const numericFields = ['cash_flow', 'gross_revenue', 'ebitda', 'rent', 'year_established', 'ffe', 'inventory_value', 'building_size', 'employees'];
+        numericFields.forEach(field => {
+            const value = form.data[field];
+            if (value !== null && value !== undefined && value !== '' && value !== 0) {
+                const numValue = Number(value);
+                if (isNaN(numValue) || numValue < 0) {
+                    errors[field] = `${field.replace('_', ' ')} must be a valid positive number`;
+                }
+            }
+        });
+        
+        // Validate required agent fields if they exist
+        if (form.data.listing_agent && typeof form.data.listing_agent === 'string' && form.data.listing_agent.trim() !== '' && 
+            (!form.data.agent_phone_number || (typeof form.data.agent_phone_number === 'string' && form.data.agent_phone_number.trim() === ''))) {
+            errors.agent_phone_number = 'Agent phone number is required when agent name is provided';
+        }
+        if (form.data.agent_phone_number && typeof form.data.agent_phone_number === 'string' && form.data.agent_phone_number.trim() !== '' && 
+            (!form.data.listing_agent || (typeof form.data.listing_agent === 'string' && form.data.listing_agent.trim() === ''))) {
+            errors.listing_agent = 'Agent name is required when agent phone number is provided';
+        }
+        
+        if (Object.keys(errors).length > 0) {
+            console.log('❌ Step 3 validation failed with errors:', errors);
+            Object.keys(errors).forEach(key => {
+                form.setError(key, errors[key]);
+            });
+            toast.error('Please fix the errors before proceeding to the next step.');
+            return false;
+        }
+        
+        console.log('✅ Step 3 validation passed!');
+        form.clearErrors();
+        return true;
+    };
+    
+    const validateCurrentStep = (): boolean => {
+        switch (currentStep) {
+            case 1:
+                return validateStep1();
+            case 2:
+                return validateStep2();
+            case 3:
+                return validateStep3();
+            default:
+                return true;
+        }
+    };
 
-            const handleBack = () => {
-            setCurrentStep(prev => prev - 1);
-            };
+    const handleNext = () => {
+        console.log('🚀 handleNext called for step:', currentStep);
+        const isValid = validateCurrentStep();
+        console.log('✨ Validation result:', isValid);
+        if (isValid) {
+            console.log('➡️ Moving to next step:', currentStep + 1);
+            setCurrentStep(prev => prev + 1);
+        } else {
+            console.log('⛔ Cannot proceed - validation failed');
+        }
+    };
+
+    const handleBack = () => {
+        // Clear any validation errors when going back
+        form.clearErrors();
+        setCurrentStep(prev => prev - 1);
+    };
 
             const renderCurrentStep = () => {
             switch (currentStep) {
