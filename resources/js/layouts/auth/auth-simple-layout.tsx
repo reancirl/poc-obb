@@ -1,6 +1,8 @@
 import AppLogoIcon from '@/components/app-logo-icon';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
+import { type SharedData } from '@/types';
+import { AlertTriangle } from 'lucide-react';
 
 interface AuthLayoutProps {
     name?: string;
@@ -9,8 +11,26 @@ interface AuthLayoutProps {
 }
 
 export default function AuthSimpleLayout({ children, title, description }: PropsWithChildren<AuthLayoutProps>) {
+    const { auth } = usePage<SharedData>().props;
+    const isAdmin = auth?.user?.role === 'admin';
+
     return (
         <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
+            {/* Admin Warning Banner */}
+            {isAdmin && (
+                <div className="w-full max-w-4xl">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                        <div className="flex items-center gap-3">
+                            <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                            <div className="text-red-800">
+                                <p className="font-medium text-sm">
+                                    You are logged in as admin, be careful with the steps you will do in this portal
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="w-full max-w-sm">
                 <div className="flex flex-col gap-8">
                     <div className="flex flex-col items-center gap-4">

@@ -2,6 +2,8 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeftIcon } from "lucide-react"
+import { usePage } from "@inertiajs/react"
+import { type SharedData } from "@/types"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -162,13 +164,21 @@ function Sidebar({
   collapsible?: "offcanvas" | "icon" | "none"
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  
+  // Admin detection
+  const { auth } = usePage<SharedData>().props
+  const isAdmin = auth?.user?.role === 'admin'
+  
+  // Admin-specific background classes
+  const adminBgClass = isAdmin ? 'bg-red-50 border-r-red-200' : 'bg-sidebar'
+  const adminMobileBgClass = isAdmin ? 'bg-red-50' : 'bg-sidebar'
 
   if (collapsible === "none") {
     return (
       <div
         data-slot="sidebar"
         className={cn(
-          "bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col",
+          `${adminBgClass} text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col`,
           className
         )}
         {...props}
@@ -189,7 +199,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+          className={`${adminMobileBgClass} text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden`}
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -239,7 +249,10 @@ function Sidebar({
       >
         <div
           data-sidebar="sidebar"
-          className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
+          className={cn(
+            `${adminBgClass} group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm`,
+            isAdmin && "group-data-[variant=floating]:border-red-200"
+          )}
         >
           {children}
         </div>
