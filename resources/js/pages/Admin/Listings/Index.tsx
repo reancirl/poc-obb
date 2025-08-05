@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
 import AdminLayout from '@/layouts/admin-layout';
+import { Users } from 'lucide-react';
 
 // Define the Listing type
 interface Listing {
@@ -45,18 +46,63 @@ type Props = {
     from: number;
     to: number;
     total: number;
+  } | null;
+  users: Array<{
+    id: number;
+    name: string;
+    email: string;
+  }>;
+  filters: {
+    search?: string;
+    status?: string;
+    user_id?: string;
   };
+  selectedUser?: {
+    id: number;
+    name: string;
+    email: string;
+  } | null;
 };
 
-export default function AdminListingIndex({ listings }: Props) {
-  const [search, setSearch] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+export default function AdminListingIndex({ listings, users, filters, selectedUser }: Props) {
+  const [search, setSearch] = useState(filters.search || '');
+  const [selectedStatus, setSelectedStatus] = useState<string>(filters.status || 'all');
+  const [selectedUserId, setSelectedUserId] = useState<string>(filters.user_id || 'all');
+
+  const handleMemberSelect = (userId: string) => {
+    if (userId === 'all') {
+      router.get(route('admin.listings.index'));
+    } else {
+      router.get(
+        route('admin.listings.index'),
+        { user_id: userId },
+        { preserveState: true }
+      );
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedUserId || selectedUserId === 'all') {
+      return; // Don't search without a selected user
+    }
     router.get(
       route('admin.listings.index'),
-      { search, status: selectedStatus === 'all' ? '' : selectedStatus },
+      { 
+        search, 
+        status: selectedStatus === 'all' ? '' : selectedStatus,
+        user_id: selectedUserId
+      },
+      { preserveState: true }
+    );
+  };
+
+  const handleClearFilters = () => {
+    setSearch('');
+    setSelectedStatus('all');
+    router.get(
+      route('admin.listings.index'),
+      { user_id: selectedUserId },
       { preserveState: true }
     );
   };
@@ -93,29 +139,96 @@ export default function AdminListingIndex({ listings }: Props) {
     <AdminLayout>
       <Head title="Manage Listings" />
       
-      <div className="py-6">
-        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div className="p-6 bg-white border-b border-gray-200">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold">Manage Business Listings</h2>
-              </div>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white">Listing Management</h1>
+            <p className="text-slate-400 mt-1">Manage business listings by member</p>
+          </div>
+        </div>
 
-              <form onSubmit={handleSearch} className="mb-6">
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      placeholder="Search listings..."
-                      className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 py-2 px-4"
-                    />
-                  </div>
+        {/* Member Selection - Always at Top */}
+        <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-blue-500/20 rounded-lg">
+              <Users className="h-5 w-5 text-blue-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-white">Select Member</h2>
+              <p className="text-sm text-slate-400">Choose a member to view and manage their listings</p>
+            </div>
+          </div>
+          
+          <div className="flex gap-4">
+            <select
+              value={selectedUserId}
+              onChange={(e) => {
+                setSelectedUserId(e.target.value);
+                handleMemberSelect(e.target.value);
+              }}
+              className="flex-1 rounded-lg bg-slate-700 border-slate-600 text-white focus:border-blue-500 focus:ring focus:ring-blue-200/20 py-3 px-4"
+            >
+              <option value="all">Select a member...</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name} ({user.email})
+                </option>
+              ))}
+            </select>
+            {selectedUserId && selectedUserId !== 'all' && (
+              <button
+                onClick={() => {
+                  setSelectedUserId('all');
+                  handleMemberSelect('all');
+                }}
+                className="px-4 py-3 bg-slate-600 text-white rounded-lg hover:bg-slate-500 transition-colors"
+              >
+                Clear Selection
+              </button>
+            )}
+          </div>
+          
+          {selectedUser && (
+            <div className="mt-4 p-4 bg-slate-700/50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                  {selectedUser.name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <div className="text-white font-medium">{selectedUser.name}</div>
+                  <div className="text-slate-400 text-sm">{selectedUser.email}</div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Listings Section - Only show if user is selected */}
+        {selectedUserId && selectedUserId !== 'all' ? (
+          listings ? (
+            <div className="bg-slate-800 rounded-xl border border-slate-700">
+              {/* Search and Filter Bar */}
+              <div className="p-6 border-b border-slate-700">
+                <div className="flex items-center gap-3 mb-4">
+                  <h3 className="text-lg font-semibold text-white">Member Listings</h3>
+                  <span className="px-2 py-1 bg-blue-500/20 text-blue-300 text-sm rounded-full">
+                    {listings.total} listings
+                  </span>
+                </div>
+                
+                <form onSubmit={handleSearch} className="flex gap-4">
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search listings..."
+                    className="flex-1 rounded-lg bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-blue-500 focus:ring focus:ring-blue-200/20 py-2 px-4"
+                  />
                   <select
                     value={selectedStatus}
                     onChange={(e) => setSelectedStatus(e.target.value)}
-                    className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+                    className="rounded-lg bg-slate-700 border-slate-600 text-white focus:border-blue-500 focus:ring focus:ring-blue-200/20 py-2 px-4"
                   >
                     <option value="all">All Statuses</option>
                     <option value="draft">Draft</option>
@@ -125,88 +238,85 @@ export default function AdminListingIndex({ listings }: Props) {
                   </select>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     Search
                   </button>
-                </div>
-              </form>
+                  {(search || selectedStatus !== 'all') && (
+                    <button
+                      type="button"
+                      onClick={handleClearFilters}
+                      className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-500 transition-colors"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </form>
+              </div>
 
+              {/* Listings Table */}
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full">
+                  <thead className="bg-slate-700/50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
                         Listing
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Owner
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
                         Type
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
                         Location
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
                         Price
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
                         Status
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-right text-xs font-medium text-slate-300 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="divide-y divide-slate-700">
                     {listings.data.length > 0 ? (
                       listings.data.map((listing) => (
-                        <tr key={listing.id}>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">
+                        <tr key={listing.id} className="hover:bg-slate-700/30">
+                          <td className="px-6 py-4">
+                            <div className="text-sm font-medium text-white">
                               {listing.headline}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-slate-400">
                               {listing.industry}
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {listing.user ? (
-                              <div className="text-sm text-gray-900">
-                                <div>{listing.user.name}</div>
-                                <div className="text-xs text-gray-500">{listing.user.email}</div>
-                              </div>
-                            ) : (
-                              <span className="text-sm text-gray-500">No owner</span>
-                            )}
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-slate-300">{listing.listing_type}</div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{listing.listing_type}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-slate-300">
                               {listing.city}, {listing.state}
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">
+                          <td className="px-6 py-4">
+                            <div className="text-sm font-medium text-green-400">
                               ${listing.asking_price.toLocaleString()}
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-6 py-4">
                             {getStatusBadge(listing.status)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                          <td className="px-6 py-4 text-right text-sm space-x-3">
                             <Link
                               href={route('listings.show', listing.id)}
-                              className="text-blue-600 hover:text-blue-900"
+                              className="text-blue-400 hover:text-blue-300 transition-colors"
                             >
                               View
                             </Link>
                             <button
                               onClick={() => handleDelete(listing.id)}
-                              className="text-red-600 hover:text-red-900 ml-2"
+                              className="text-red-400 hover:text-red-300 transition-colors"
                             >
                               Delete
                             </button>
@@ -215,8 +325,10 @@ export default function AdminListingIndex({ listings }: Props) {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">
-                          No listings found.
+                        <td colSpan={6} className="px-6 py-8 text-center">
+                          <div className="text-slate-400">
+                            No listings found for this member.
+                          </div>
                         </td>
                       </tr>
                     )}
@@ -224,32 +336,44 @@ export default function AdminListingIndex({ listings }: Props) {
                 </table>
               </div>
 
-              {listings.last_page > 1 && (
-                <div className="mt-4 flex justify-between items-center">
-                  <div className="text-sm text-gray-700">
-                    Showing <span className="font-medium">{listings.from}</span> to{' '}
-                    <span className="font-medium">{listings.to}</span> of{' '}
-                    <span className="font-medium">{listings.total}</span> results
+              {/* Pagination */}
+              {listings.data.length > 0 && (
+                <div className="p-6 border-t border-slate-700 flex items-center justify-between">
+                  <div className="text-sm text-slate-400">
+                    Showing {listings.from} to {listings.to} of {listings.total} results
                   </div>
-                  <nav className="flex space-x-2" aria-label="Pagination">
+                  <div className="flex space-x-1">
                     {listings.links.map((link, index) => (
                       <Link
                         key={index}
                         href={link.url || '#'}
-                        className={`px-4 py-2 rounded-md text-sm font-medium ${
+                        className={`px-3 py-2 text-sm rounded-md transition-colors ${
                           link.active
                             ? 'bg-blue-600 text-white'
-                            : 'text-gray-700 hover:bg-gray-50'
-                        } ${!link.url ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            : link.url
+                            ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                            : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                        }`}
                         dangerouslySetInnerHTML={{ __html: link.label }}
                       />
                     ))}
-                  </nav>
+                  </div>
                 </div>
               )}
             </div>
+          ) : (
+            <div className="bg-slate-800 rounded-xl p-8 border border-slate-700 text-center">
+              <div className="text-slate-400">Loading listings...</div>
+            </div>
+          )
+        ) : (
+          <div className="bg-slate-800 rounded-xl p-8 border border-slate-700 text-center">
+            <div className="text-slate-400 mb-2">No member selected</div>
+            <div className="text-sm text-slate-500">
+              Please select a member above to view and manage their listings.
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </AdminLayout>
   );

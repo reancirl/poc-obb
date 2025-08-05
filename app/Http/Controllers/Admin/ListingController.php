@@ -16,23 +16,36 @@ class ListingController extends Controller
      */
     public function index(Request $request)
     {
-        $listings = Listing::with('user')
-            ->latest()
-            ->when($request->search, function ($query, $search) {
-                $query->where('headline', 'like', "%{$search}%")
-                    ->orWhere('business_description', 'like', "%{$search}%")
-                    ->orWhere('city', 'like', "%{$search}%")
-                    ->orWhere('state', 'like', "%{$search}%");
-            })
-            ->when($request->status, function ($query, $status) {
-                $query->where('status', $status);
-            })
-            ->paginate(10)
-            ->withQueryString();
+        // Get all users who have listings for the member search dropdown
+        $users = User::whereHas('listings')
+            ->select('id', 'name', 'email')
+            ->orderBy('name')
+            ->get();
+
+        // Only fetch listings if a user is selected
+        $listings = null;
+        if ($request->user_id) {
+            $listings = Listing::with('user')
+                ->where('user_id', $request->user_id)
+                ->when($request->search, function ($query, $search) {
+                    $query->where('headline', 'like', "%{$search}%")
+                        ->orWhere('business_description', 'like', "%{$search}%")
+                        ->orWhere('city', 'like', "%{$search}%")
+                        ->orWhere('state', 'like', "%{$search}%");
+                })
+                ->when($request->status, function ($query, $status) {
+                    $query->where('status', $status);
+                })
+                ->latest()
+                ->paginate(10)
+                ->withQueryString();
+        }
 
         return Inertia::render('Admin/Listings/Index', [
             'listings' => $listings,
-            'filters' => $request->only(['search', 'status']),
+            'users' => $users,
+            'filters' => $request->only(['search', 'status', 'user_id']),
+            'selectedUser' => $request->user_id ? $users->find($request->user_id) : null,
         ]);
     }
 
