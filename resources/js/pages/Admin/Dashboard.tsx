@@ -1,7 +1,7 @@
 import { Head } from '@inertiajs/react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import AppLayout from '@/layouts/app-layout';
-import { Users, Store, Briefcase, Eye } from 'lucide-react';
+import { AdminCard, AdminCardContent, AdminCardDescription, AdminCardHeader, AdminCardTitle } from '@/components/admin/admin-card';
+import AdminLayout from '@/layouts/admin-layout';
+import { Users, Store, Briefcase, Eye, TrendingUp, Activity, Shield, BarChart3 } from 'lucide-react';
 
 interface Props {
     user: any;
@@ -15,94 +15,187 @@ interface Props {
 
 export default function AdminDashboard({ user, stats = { totalUsers: 10, sellerCount: 3, buyerCount: 7, listingsCount: 15 } }: Props) {
     return (
-        <AppLayout>
+        <AdminLayout>
             <Head title="Admin Dashboard" />
-            <div className="container mx-auto p-6">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-                    <p className="text-muted-foreground">Welcome back, {user.name}!</p>
+            <div className="space-y-8">
+                {/* Header Section */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-white mb-2">Admin Dashboard</h1>
+                        <p className="text-slate-400 flex items-center gap-2">
+                            <Shield className="h-4 w-4" />
+                            Welcome back, <span className="text-blue-400 font-medium">{user.name}</span>
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2 bg-green-900/20 border border-green-800/30 rounded-lg">
+                        <Activity className="h-4 w-4 text-green-400" />
+                        <span className="text-green-300 text-sm font-medium">System Online</span>
+                    </div>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {/* Stats Grid */}
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                     {/* Total Users Card */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                            <Users className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats.totalUsers}</div>
-                            <p className="text-xs text-muted-foreground">+12% from last month</p>
-                        </CardContent>
-                    </Card>
+                    <AdminCard variant="stat">
+                        <AdminCardHeader>
+                            <div>
+                                <AdminCardTitle>Total Users</AdminCardTitle>
+                                <AdminCardDescription>Registered accounts</AdminCardDescription>
+                            </div>
+                            <div className="p-3 bg-blue-500/20 rounded-lg">
+                                <Users className="h-6 w-6 text-blue-400" />
+                            </div>
+                        </AdminCardHeader>
+                        <AdminCardContent>
+                            <div className="text-3xl font-bold text-white mb-2">{stats.totalUsers}</div>
+                            <div className="flex items-center gap-2">
+                                <TrendingUp className="h-4 w-4 text-green-400" />
+                                <span className="text-green-400 text-sm font-medium">+12%</span>
+                                <span className="text-slate-400 text-sm">from last month</span>
+                            </div>
+                        </AdminCardContent>
+                    </AdminCard>
                     
                     {/* Sellers Card */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Sellers</CardTitle>
-                            <Store className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats.sellerCount}</div>
-                            <p className="text-xs text-muted-foreground">+5% from last month</p>
-                        </CardContent>
-                    </Card>
+                    <AdminCard variant="stat">
+                        <AdminCardHeader>
+                            <div>
+                                <AdminCardTitle>Active Sellers</AdminCardTitle>
+                                <AdminCardDescription>Business owners</AdminCardDescription>
+                            </div>
+                            <div className="p-3 bg-purple-500/20 rounded-lg">
+                                <Store className="h-6 w-6 text-purple-400" />
+                            </div>
+                        </AdminCardHeader>
+                        <AdminCardContent>
+                            <div className="text-3xl font-bold text-white mb-2">{stats.sellerCount}</div>
+                            <div className="flex items-center gap-2">
+                                <TrendingUp className="h-4 w-4 text-green-400" />
+                                <span className="text-green-400 text-sm font-medium">+5%</span>
+                                <span className="text-slate-400 text-sm">from last month</span>
+                            </div>
+                        </AdminCardContent>
+                    </AdminCard>
                     
                     {/* Buyers Card */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Buyers</CardTitle>
-                            <Users className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats.buyerCount}</div>
-                            <p className="text-xs text-muted-foreground">+18% from last month</p>
-                        </CardContent>
-                    </Card>
+                    <AdminCard variant="stat">
+                        <AdminCardHeader>
+                            <div>
+                                <AdminCardTitle>Active Buyers</AdminCardTitle>
+                                <AdminCardDescription>Potential customers</AdminCardDescription>
+                            </div>
+                            <div className="p-3 bg-green-500/20 rounded-lg">
+                                <Briefcase className="h-6 w-6 text-green-400" />
+                            </div>
+                        </AdminCardHeader>
+                        <AdminCardContent>
+                            <div className="text-3xl font-bold text-white mb-2">{stats.buyerCount}</div>
+                            <div className="flex items-center gap-2">
+                                <TrendingUp className="h-4 w-4 text-green-400" />
+                                <span className="text-green-400 text-sm font-medium">+8%</span>
+                                <span className="text-slate-400 text-sm">from last month</span>
+                            </div>
+                        </AdminCardContent>
+                    </AdminCard>
                     
-                    {/* Total Listings Card */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Active Listings</CardTitle>
-                            <Briefcase className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats.listingsCount}</div>
-                            <p className="text-xs text-muted-foreground">+7% from last month</p>
-                        </CardContent>
-                    </Card>
+                    {/* Listings Card */}
+                    <AdminCard variant="stat">
+                        <AdminCardHeader>
+                            <div>
+                                <AdminCardTitle>Active Listings</AdminCardTitle>
+                                <AdminCardDescription>Published businesses</AdminCardDescription>
+                            </div>
+                            <div className="p-3 bg-orange-500/20 rounded-lg">
+                                <BarChart3 className="h-6 w-6 text-orange-400" />
+                            </div>
+                        </AdminCardHeader>
+                        <AdminCardContent>
+                            <div className="text-3xl font-bold text-white mb-2">{stats.listingsCount}</div>
+                            <div className="flex items-center gap-2">
+                                <TrendingUp className="h-4 w-4 text-green-400" />
+                                <span className="text-green-400 text-sm font-medium">+20%</span>
+                                <span className="text-slate-400 text-sm">from last month</span>
+                            </div>
+                        </AdminCardContent>
+                    </AdminCard>
                 </div>
                 
                 {/* Second row with site metrics */}
                 <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     {/* Total Site Visits Card */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Site Visits</CardTitle>
-                            <Eye className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">3,245</div>
-                            <p className="text-xs text-muted-foreground">+25% from last month</p>
-                        </CardContent>
-                    </Card>
+                    <AdminCard variant="stat">
+                        <AdminCardHeader>
+                            <div>
+                                <AdminCardTitle>Total Site Visits</AdminCardTitle>
+                                <AdminCardDescription>Unique visitors</AdminCardDescription>
+                            </div>
+                            <div className="p-3 bg-blue-500/20 rounded-lg">
+                                <Eye className="h-6 w-6 text-blue-400" />
+                            </div>
+                        </AdminCardHeader>
+                        <AdminCardContent>
+                            <div className="text-3xl font-bold text-white mb-2">3,245</div>
+                            <div className="flex items-center gap-2">
+                                <TrendingUp className="h-4 w-4 text-green-400" />
+                                <span className="text-green-400 text-sm font-medium">+25%</span>
+                                <span className="text-slate-400 text-sm">from last month</span>
+                            </div>
+                        </AdminCardContent>
+                    </AdminCard>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-semibold text-white">Quick Actions</h2>
+                        <span className="text-sm text-slate-400">Frequently used admin tools</span>
+                    </div>
                     
-                    {/* Average Time on Site Card */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Avg. Session Duration</CardTitle>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="h-4 w-4 text-muted-foreground">
-                                <circle cx="12" cy="12" r="10" />
-                                <polyline points="12 6 12 12 16 14" />
-                            </svg>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">4m 32s</div>
-                            <p className="text-xs text-muted-foreground">+8% from last month</p>
-                        </CardContent>
-                    </Card>
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <AdminCard className="cursor-pointer hover:scale-105 transition-transform group">
+                            <AdminCardContent className="p-6">
+                                <div className="flex items-center space-x-4">
+                                    <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl group-hover:from-blue-400 group-hover:to-blue-500 transition-all">
+                                        <Users className="h-6 w-6 text-white" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-semibold text-white group-hover:text-blue-300 transition-colors">Manage Users</h3>
+                                        <p className="text-sm text-slate-400">Add, edit, or remove users</p>
+                                    </div>
+                                </div>
+                            </AdminCardContent>
+                        </AdminCard>
+                        
+                        <AdminCard className="cursor-pointer hover:scale-105 transition-transform group">
+                            <AdminCardContent className="p-6">
+                                <div className="flex items-center space-x-4">
+                                    <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl group-hover:from-green-400 group-hover:to-green-500 transition-all">
+                                        <Store className="h-6 w-6 text-white" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-semibold text-white group-hover:text-green-300 transition-colors">Manage Listings</h3>
+                                        <p className="text-sm text-slate-400">Review and moderate listings</p>
+                                    </div>
+                                </div>
+                            </AdminCardContent>
+                        </AdminCard>
+                        
+                        <AdminCard className="cursor-pointer hover:scale-105 transition-transform group">
+                            <AdminCardContent className="p-6">
+                                <div className="flex items-center space-x-4">
+                                    <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl group-hover:from-purple-400 group-hover:to-purple-500 transition-all">
+                                        <BarChart3 className="h-6 w-6 text-white" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-semibold text-white group-hover:text-purple-300 transition-colors">View Analytics</h3>
+                                        <p className="text-sm text-slate-400">Reports and insights</p>
+                                    </div>
+                                </div>
+                            </AdminCardContent>
+                        </AdminCard>
+                    </div>
                 </div>
             </div>
-        </AppLayout>
+        </AdminLayout>
     );
 }

@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
+import AdminLayout from '@/layouts/admin-layout';
 import { User } from '@/types';
 
 type Props = {
@@ -28,7 +28,7 @@ export default function UserEdit({ user, roles }: Props) {
   };
 
   return (
-    <AppLayout>
+    <AdminLayout>
       <Head title={`Edit User - ${user.name}`} />
       
       <div className="py-6">
@@ -154,6 +154,6 @@ export default function UserEdit({ user, roles }: Props) {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </AdminLayout>
   );
 }

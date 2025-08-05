@@ -1,7 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
-import AppLayout from '@/layouts/app-layout';
+import AdminLayout from '@/layouts/admin-layout';
 
 // Define the Listing type
 interface Listing {
@@ -90,7 +90,7 @@ export default function AdminListingIndex({ listings }: Props) {
   };
 
   return (
-    <AppLayout>
+    <AdminLayout>
       <Head title="Manage Listings" />
       
       <div className="py-6">
@@ -251,6 +251,6 @@ export default function AdminListingIndex({ listings }: Props) {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </AdminLayout>
   );
 }

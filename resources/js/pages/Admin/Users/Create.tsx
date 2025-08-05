@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
+import AdminLayout from '@/layouts/admin-layout';
 
 type Props = {
   roles: { value: string; label: string }[];
@@ -20,7 +20,7 @@ export default function UserCreate({ roles }: Props) {
   };
 
   return (
-    <AppLayout>
+    <AdminLayout>
       <Head title="Create User" />
       
       <div className="py-6">
@@ -148,6 +148,6 @@ export default function UserCreate({ roles }: Props) {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </AdminLayout>
   );
 }

@@ -1,7 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
-import AppLayout from '@/layouts/app-layout';
+import AdminLayout from '@/layouts/admin-layout';
 
 // Define the User type
 interface User {
@@ -116,7 +116,7 @@ export default function UserIndex({ users }: Props) {
   };
 
   return (
-    <AppLayout>
+    <AdminLayout>
       <Head title="Users" />
       
       <div className="py-6">
@@ -269,6 +269,6 @@ export default function UserIndex({ users }: Props) {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </AdminLayout>
   );
 }
