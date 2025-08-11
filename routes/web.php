@@ -110,6 +110,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ]);
         })->name('feedback');
     });
+    
+    // Broker upgrade routes
+    Route::prefix('broker')->name('broker.')->group(function () {
+        Route::get('/upgrade', [\App\Http\Controllers\BrokerUpgradeController::class, 'show'])->name('upgrade');
+        Route::post('/upgrade', [\App\Http\Controllers\BrokerUpgradeController::class, 'store']);
+        Route::get('/profile', [\App\Http\Controllers\BrokerUpgradeController::class, 'profile'])->name('profile');
+        Route::patch('/profile', [\App\Http\Controllers\BrokerUpgradeController::class, 'update'])->name('update');
+    });
 });
 
 // Settings routes

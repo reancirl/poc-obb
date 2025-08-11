@@ -30,6 +30,17 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'role',
         'suspended_at',
+        // Broker fields
+        'is_broker',
+        'company_name',
+        'broker_phone',
+        'serving_area',
+        'website',
+        'profile_photo',
+        'bio',
+        'license_number',
+        'license_state',
+        'broker_upgraded_at',
     ];
 
     /**
@@ -54,6 +65,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'suspended_at' => 'datetime',
             'password' => 'hashed',
             'role' => 'string',
+            'is_broker' => 'boolean',
+            'broker_upgraded_at' => 'datetime',
         ];
     }
 
@@ -78,6 +91,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         // Legacy support: both buyer and member can buy
         return $this->role === 'buyer' || $this->role === 'member';
+    }
+
+    public function isBroker(): bool
+    {
+        return $this->is_broker === true;
     }
 
     /**

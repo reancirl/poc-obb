@@ -28,6 +28,7 @@ export function NavMain() {
     const page = usePage();
     const { auth } = page.props as any;
     const userRole = auth.user?.role || 'guest';
+    const isBroker = auth.user?.is_broker || false;
 
     // Define navigation items with role-based visibility
     const navItems: NavItemWithRoles[] = [
@@ -115,7 +116,7 @@ export function NavMain() {
           },
           {
             title: 'Account',
-            href: '/settings/profile',
+            href: isBroker ? '/broker/profile' : '/settings/account',
             icon: User,
             roles: ['member', 'admin'],
           },
