@@ -20,9 +20,14 @@ export default function PublicLayout({ children, auth }: Props) {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div className="mb-8 flex justify-between items-center">
-          <div>
-            {/* <h1 className="text-3xl font-bold text-gray-900">Business Listings</h1> */}
-            {/* <p className="mt-2 text-gray-600">Browse our available businesses for sale</p> */}
+          <div className="pt-6">
+            <Link href={route('home')}>
+              <img 
+                src="/images/logo_bg_removed.png" 
+                alt="Logo" 
+                className="h-24 w-auto"
+              />
+            </Link>
           </div>
           <div className="flex space-x-2 pt-10">
             <Link

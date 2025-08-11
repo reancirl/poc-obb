@@ -36,7 +36,8 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <Link href="/" prefetch>
-                                <AppLogo />
+                                {/* <AppLogo /> */}
+                                <strong>MonarchBusinesses</strong>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

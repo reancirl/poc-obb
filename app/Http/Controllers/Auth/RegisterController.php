@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
@@ -44,9 +45,12 @@ class RegisterController extends Controller
             'role' => $request->role,
         ]);
 
-        // Log the user in after registration
+        // Fire the Registered event to send email verification
+        event(new Registered($user));
+
+        // Log the user in after registration (they still need to verify email)
         auth()->login($user);
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->route('verification.notice');
     }
 }
