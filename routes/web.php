@@ -23,6 +23,10 @@ Route::get('/listings', [\App\Http\Controllers\PublicListingController::class, '
 Route::get('/listings/{listing}', [\App\Http\Controllers\PublicListingController::class, 'show'])->name('listings.show');
 Route::post('/listings/{listing}/contact', [\App\Http\Controllers\PublicListingController::class, 'contact'])->name('listings.contact');
 
+// Public broker routes
+Route::get('/brokers/{broker}', [\App\Http\Controllers\PublicListingController::class, 'showBroker'])->name('broker.show');
+Route::get('/brokers', [\App\Http\Controllers\PublicListingController::class, 'brokers'])->name('brokers.index');
+
 // Authentication routes
 require __DIR__.'/auth.php';
 

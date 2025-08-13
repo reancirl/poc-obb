@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Listing;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -11,7 +12,28 @@ class PublicListingController extends Controller
 {
     public function welcome()
     {
-        return Inertia::render('welcome');
+        // Get verified brokers for the welcome page
+        $brokers = User::where('is_broker', true)
+            ->whereNotNull('broker_upgraded_at')
+            ->select(['id', 'name', 'company_name', 'serving_area', 'profile_photo', 'bio', 'broker_phone'])
+            ->orderBy('broker_upgraded_at', 'desc')
+            ->limit(3) // Show top 3 brokers on welcome page
+            ->get()
+            ->map(function ($broker) {
+                return [
+                    'id' => $broker->id,
+                    'name' => $broker->name,
+                    'company_name' => $broker->company_name,
+                    'serving_area' => $broker->serving_area,
+                    'bio' => $broker->bio ? substr($broker->bio, 0, 120) . '...' : null,
+                    'profile_photo' => $broker->profile_photo ? asset('storage/' . $broker->profile_photo) : null,
+                    'phone' => $broker->broker_phone,
+                ];
+            });
+
+        return Inertia::render('welcome', [
+            'brokers' => $brokers,
+        ]);
     }
     /**
      * Display a listing of published listings.
@@ -69,10 +91,30 @@ class PublicListingController extends Controller
             $interestedListingIds = $user->interestedListings()->pluck('listing_id')->toArray();
         }
         
+        // Get verified brokers for the homepage directory
+        $brokers = User::where('is_broker', true)
+            ->whereNotNull('broker_upgraded_at')
+            ->select(['id', 'name', 'company_name', 'serving_area', 'profile_photo', 'bio', 'broker_phone'])
+            ->orderBy('broker_upgraded_at', 'desc')
+            ->limit(6) // Show top 6 brokers
+            ->get()
+            ->map(function ($broker) {
+                return [
+                    'id' => $broker->id,
+                    'name' => $broker->name,
+                    'company_name' => $broker->company_name,
+                    'serving_area' => $broker->serving_area,
+                    'bio' => $broker->bio ? substr($broker->bio, 0, 150) . '...' : null,
+                    'profile_photo' => $broker->profile_photo ? asset('storage/' . $broker->profile_photo) : null,
+                    'phone' => $broker->broker_phone,
+                ];
+            });
+        
         return Inertia::render('Listings/Index', [
             'listings' => $listings,
             'filters' => $request->only(['search', 'industry']),
             'interestedListingIds' => $interestedListingIds,
+            'brokers' => $brokers,
         ]);
     }
 
@@ -162,5 +204,65 @@ class PublicListingController extends Controller
         
         // For this example, we'll just return a success message
         return back()->with('success', 'Your inquiry has been sent to the business owner.');
+    }
+
+    /**
+     * Display all verified brokers
+     */
+    public function brokers()
+    {
+        $brokers = User::where('is_broker', true)
+            ->whereNotNull('broker_upgraded_at')
+            ->select(['id', 'name', 'company_name', 'serving_area', 'profile_photo', 'bio', 'broker_phone', 'website'])
+            ->orderBy('broker_upgraded_at', 'desc')
+            ->paginate(12)
+            ->through(function ($broker) {
+                return [
+                    'id' => $broker->id,
+                    'name' => $broker->name,
+                    'company_name' => $broker->company_name,
+                    'serving_area' => $broker->serving_area,
+                    'bio' => $broker->bio ? substr($broker->bio, 0, 200) . '...' : null,
+                    'profile_photo' => $broker->profile_photo ? asset('storage/' . $broker->profile_photo) : null,
+                    'phone' => $broker->broker_phone,
+                    'website' => $broker->website,
+                ];
+            });
+
+        return Inertia::render('Brokers/Index', [
+            'brokers' => $brokers,
+        ]);
+    }
+
+    /**
+     * Display a specific broker's profile
+     */
+    public function showBroker(string $id)
+    {
+        $broker = User::where('id', $id)
+            ->where('is_broker', true)
+            ->whereNotNull('broker_upgraded_at')
+            ->first();
+
+        if (!$broker) {
+            abort(404, 'Broker not found');
+        }
+
+        return Inertia::render('Brokers/Show', [
+            'broker' => [
+                'id' => $broker->id,
+                'name' => $broker->name,
+                'email' => $broker->email,
+                'company_name' => $broker->company_name,
+                'serving_area' => $broker->serving_area,
+                'bio' => $broker->bio,
+                'profile_photo' => $broker->profile_photo ? asset('storage/' . $broker->profile_photo) : null,
+                'phone' => $broker->broker_phone,
+                'website' => $broker->website,
+                'license_number' => $broker->license_number,
+                'license_state' => $broker->license_state,
+                'broker_upgraded_at' => $broker->broker_upgraded_at,
+            ],
+        ]);
     }
 }
