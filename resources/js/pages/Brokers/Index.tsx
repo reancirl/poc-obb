@@ -49,7 +49,7 @@ export default function BrokersIndex({ brokers, auth }: Props) {
         {brokers.data.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {brokers.data.map((broker) => (
-              <Link key={broker.id} href={`/broker/${broker.id}`}>
+              <Link key={broker.id} href={`/brokers/${broker.id}`}>
                 <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-all duration-200 cursor-pointer h-full">
                   {/* Broker Photo and Badge */}
                   <div className="flex items-start gap-4 mb-6">
