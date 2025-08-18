@@ -192,7 +192,7 @@ export default function ListingForm({
       <div className="bg-white shadow rounded-lg p-6">
         <h2 className="text-lg font-medium mb-6">Location Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {['location_name', 'address', 'city', 'state', 'zip', 'county'].map((field) => (
+          {['address', 'city', 'state', 'zip', 'county'].map((field) => (
             <div key={field} className="space-y-2">
               <Label htmlFor={field}>
                 {field.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}

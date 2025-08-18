@@ -29,7 +29,6 @@ interface FormData {
   headline: string;
   industry: string;
   listing_type: string;
-  location_name: string;
   address: string;
   city: string;
   state: string;
@@ -97,7 +96,6 @@ type Listing = {
   listing_type?: string;
   industry?: string;
   headline?: string;
-  location_name?: string;
   address?: string;
   city?: string;
   state?: string;
@@ -254,7 +252,6 @@ export default function EditListing({ listing, auth, industries, industryChildre
     industry: listing.industry ?? '',
     industry_subcategory: listing.industry_subcategory ?? '',
     listing_type: listing.listing_type ?? '',
-    location_name: listing.location_name ?? '',
     address: listing.address ?? '',
     city: listing.city ?? '',
     state: listing.state ?? '',
@@ -427,9 +424,6 @@ export default function EditListing({ listing, auth, industries, industryChildre
     }
     if (!form.data.headline || (typeof form.data.headline === 'string' && form.data.headline.trim() === '')) {
       errors.headline = 'Headline is required';
-    }
-    if (!form.data.location_name || (typeof form.data.location_name === 'string' && form.data.location_name.trim() === '')) {
-      errors.location_name = 'Location name is required';
     }
     if (!form.data.address || (typeof form.data.address === 'string' && form.data.address.trim() === '')) {
       errors.address = 'Address is required';

@@ -99,7 +99,6 @@ const { auth, industries, industryChildren } = usePage<Props>().props;
             location_confidentiality: 'Public', // Default to first option
             real_estate_type: '',
             headline: '',
-            location_name: '',
             address: '',
             city: '',
             state: '',
@@ -217,9 +216,6 @@ const { auth, industries, industryChildren } = usePage<Props>().props;
             if (!form.data.headline || (typeof form.data.headline === 'string' && form.data.headline.trim() === '')) {
                 validationErrors.headline = 'Headline is required';
             }
-            if (!form.data.location_name || (typeof form.data.location_name === 'string' && form.data.location_name.trim() === '')) {
-                validationErrors.location_name = 'Location name is required';
-            }
             if (!form.data.address || (typeof form.data.address === 'string' && form.data.address.trim() === '')) {
                 validationErrors.address = 'Address is required';
             }
@@ -306,7 +302,7 @@ const { auth, industries, industryChildren } = usePage<Props>().props;
                 // Handle string values - skip empty strings for optional fields
                 else if (typeof value === 'string') {
                     // Required fields should always be appended
-                    const requiredFields = ['headline', 'industry', 'listing_type', 'location_name', 'address', 'city', 'state', 'zip', 'location_confidentiality', 'email'];
+                    const requiredFields = ['headline', 'industry', 'listing_type', 'address', 'city', 'state', 'zip', 'location_confidentiality', 'email'];
                     if (requiredFields.includes(key) || value.trim() !== '') {
                         formData.append(key, value);
                     }
@@ -432,9 +428,6 @@ const { auth, industries, industryChildren } = usePage<Props>().props;
         }
         if (!form.data.headline || (typeof form.data.headline === 'string' && form.data.headline.trim() === '')) {
             errors.headline = 'Headline is required';
-        }
-        if (!form.data.location_name || (typeof form.data.location_name === 'string' && form.data.location_name.trim() === '')) {
-            errors.location_name = 'Location name is required';
         }
         if (!form.data.address || (typeof form.data.address === 'string' && form.data.address.trim() === '')) {
             errors.address = 'Address is required';
