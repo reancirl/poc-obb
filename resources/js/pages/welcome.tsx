@@ -16,9 +16,11 @@ interface Broker {
 interface Props {
   auth: any;
   brokers: Broker[];
+  industries: string[];
+  states: string[];
 }
 
-export default function Welcome({ auth, brokers }: Props) {
+export default function Welcome({ auth, brokers, industries, states }: Props) {
   const [location, setLocation] = useState('');
   const [industry, setIndustry] = useState('');
   const [activeTab, setActiveTab] = useState('Businesses');
@@ -53,24 +55,20 @@ export default function Welcome({ auth, brokers }: Props) {
           
           {/* Search Form */}
           <form onSubmit={handleSearch} className="bg-white rounded-lg shadow-xl p-2 flex flex-col md:flex-row gap-2 max-w-3xl mx-auto">
-            {/* Location Input */}
-            <div className="flex-1 relative">
-              <input
-                type="text"
-                placeholder="California"
+            {/* Location Dropdown */}
+            <div className="flex-1">
+              <select
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="w-full px-4 py-3 text-gray-900 placeholder-gray-500 border-0 rounded-md focus:ring-2 focus:ring-blue-900 focus:outline-none"
-              />
-              {location && (
-                <button
-                  type="button"
-                  onClick={() => setLocation('')}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  ✕
-                </button>
-              )}
+                className="w-full px-4 py-3 text-gray-900 border-0 rounded-md focus:ring-2 focus:ring-blue-900 focus:outline-none appearance-none bg-white cursor-pointer"
+              >
+                <option value="">All States</option>
+                {states.map((state) => (
+                  <option key={state} value={state}>
+                    {state}
+                  </option>
+                ))}
+              </select>
             </div>
             
             {/* Industry Dropdown */}
@@ -81,24 +79,11 @@ export default function Welcome({ auth, brokers }: Props) {
                 className="w-full px-4 py-3 text-gray-900 border-0 rounded-md focus:ring-2 focus:ring-blue-900 focus:outline-none appearance-none bg-white cursor-pointer"
               >
                 <option value="">All Industries</option>
-                <option value="IT & Software">IT & Software</option>
-                <option value="Healthcare">Healthcare</option>
-                <option value="Retail & E-commerce">Retail & E-commerce</option>
-                <option value="Education & Training">Education & Training</option>
-                <option value="Hospitality & Tourism">Hospitality & Tourism</option>
-                <option value="Manufacturing">Manufacturing</option>
-                <option value="Finance & Insurance">Finance & Insurance</option>
-                <option value="Real Estate">Real Estate</option>
-                <option value="Construction & Contractors">Construction & Contractors</option>
-                <option value="Food & Beverage">Food & Beverage</option>
-                <option value="Agriculture">Agriculture</option>
-                <option value="Automotive and Boat">Automotive and Boat</option>
-                <option value="Beauty and Personal Care">Beauty and Personal Care</option>
-                <option value="Communication and Media">Communication and Media</option>
-                <option value="Pet Services">Pet Services</option>
-                <option value="Service Businesses">Service Businesses</option>
-                <option value="Transportation and Storage">Transportation and Storage</option>
-                <option value="Wholesale and Distributors">Wholesale and Distributors</option>
+                {industries.map((industryOption) => (
+                  <option key={industryOption} value={industryOption}>
+                    {industryOption}
+                  </option>
+                ))}
               </select>
             </div>
             

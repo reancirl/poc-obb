@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Member;
 
 use App\Http\Controllers\Controller;
 use App\Models\Listing;
+use App\Models\ListingImage;
 use App\Constants\Industry;
+use App\Constants\USStates;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ListingController extends Controller
@@ -53,6 +56,7 @@ class ListingController extends Controller
                     return array_values($children);
                 }, array_values(Industry::CHILDREN))
             ),
+            'states' => USStates::getStateNames(),
         ]);
     }
 
@@ -177,6 +181,7 @@ class ListingController extends Controller
             'listing' => $listing->append('image_urls'),
             'industries' => array_values(Industry::parentLabels()),
             'industryChildren' => Industry::CHILDREN,
+            'states' => USStates::getStateNames(),
         ]);
     }
 

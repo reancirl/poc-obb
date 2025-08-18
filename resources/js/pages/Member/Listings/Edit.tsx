@@ -162,9 +162,10 @@ interface Props extends SharedData {
   listing: Listing;
   industries: string[];
   industryChildren: Record<string, Record<string, string>>;
+  states: string[];
 }
 
-export default function EditListing({ listing, auth, industries, industryChildren }: Props) {
+export default function EditListing({ listing, auth, industries, industryChildren, states }: Props) {
   const [currentStep, setCurrentStep] = useState(1);
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [deletedImageIds, setDeletedImageIds] = useState<number[]>([]);
@@ -731,6 +732,7 @@ export default function EditListing({ listing, auth, industries, industryChildre
                 industryChildren={industryChildren}
                 locationConfidentialityOptions={locationConfidentialityOptions}
                 realEstateTypes={realEstateTypes} 
+                states={states}
                 user={auth.user} 
                 onCancel={cancel} 
               />

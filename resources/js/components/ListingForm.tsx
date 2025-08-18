@@ -26,6 +26,7 @@ interface ListingFormProps {
   industryChildren?: Record<string, Record<string, string>>;
   locationConfidentialityOptions: string[];
   realEstateTypes: string[];
+  states: string[];
   user: User;
 }
 
@@ -40,6 +41,7 @@ export default function ListingForm({
   industryChildren,
   locationConfidentialityOptions,
   realEstateTypes,
+  states,
   user,
 }: ListingFormProps) {
   const handleChange = (
@@ -192,7 +194,7 @@ export default function ListingForm({
       <div className="bg-white shadow rounded-lg p-6">
         <h2 className="text-lg font-medium mb-6">Location Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {['address', 'city', 'state', 'zip', 'county'].map((field) => (
+          {['address', 'city', 'zip', 'county'].map((field) => (
             <div key={field} className="space-y-2">
               <Label htmlFor={field}>
                 {field.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
@@ -210,28 +212,27 @@ export default function ListingForm({
               )}
             </div>
           ))}
-
-          {/* Confidentiality */}
+          
+          {/* State Dropdown */}
           <div className="space-y-2">
-            <Label htmlFor="location_confidentiality">Location Confidentiality *</Label>
+            <Label htmlFor="state">State *</Label>
             <Select
-              value={String(data.location_confidentiality || '')}
-              onValueChange={handleSelect('location_confidentiality')}
-              required
+              value={String(data.state || '')}
+              onValueChange={(value) => setData('state', value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select confidentiality" />
+                <SelectValue placeholder="Select a state" />
               </SelectTrigger>
               <SelectContent>
-                {locationConfidentialityOptions.map((opt) => (
-                  <SelectItem key={opt} value={opt}>
-                    {opt}
+                {states.map((state) => (
+                  <SelectItem key={state} value={state}>
+                    {state}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {errors.location_confidentiality && (
-              <p className="text-sm text-red-500">{errors.location_confidentiality}</p>
+            {errors.state && (
+              <p className="text-sm text-red-500">{errors.state}</p>
             )}
           </div>
         </div>

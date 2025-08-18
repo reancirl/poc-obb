@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Listing;
 use App\Models\User;
+use App\Constants\Industry;
+use App\Constants\USStates;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -33,6 +35,8 @@ class PublicListingController extends Controller
 
         return Inertia::render('welcome', [
             'brokers' => $brokers,
+            'industries' => array_values(Industry::parentLabels()),
+            'states' => USStates::getStateNames(),
         ]);
     }
     /**

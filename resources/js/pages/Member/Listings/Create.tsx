@@ -13,6 +13,7 @@ import { type SharedData } from '@/types';
 interface Props extends SharedData {
   industries: string[];
   industryChildren: Record<string, Record<string, string>>;
+  states: string[];
 }
 
 type FileWithPreview = File & {
@@ -24,7 +25,7 @@ size: number;
 };
 
 export default function CreateListing() {
-const { auth, industries, industryChildren } = usePage<Props>().props;
+const { auth, industries, industryChildren, states } = usePage<Props>().props;
     const [currentStep, setCurrentStep] = useState(1);
     const [files, setFiles] = useState<FileWithPreview[]>([]);
         const [isUploading, setIsUploading] = useState(false);
@@ -564,7 +565,7 @@ const { auth, industries, industryChildren } = usePage<Props>().props;
                         processing={form.processing} listingTypes={listingTypes} industries={sortedIndustries}
                         industryChildren={industryChildren}
                         locationConfidentialityOptions={locationConfidentialityOptions}
-                        realEstateTypes={realEstateTypes} user={auth.user} onCancel={cancel} />
+                        realEstateTypes={realEstateTypes} states={states} user={auth.user} onCancel={cancel} />
 
                     <div className="flex justify-end">
                         <button type="button" onClick={handleNext}
@@ -1284,7 +1285,7 @@ const { auth, industries, industryChildren } = usePage<Props>().props;
                                             { field: 'building_size', label: 'Building Size', type: 'number' },
                                             { field: 'financing_details', label: 'Financing Details', type: 'text' },
                                         ].map(({ field, label, type }) => (
-                                            <div key={field} className="space-y-2">
+                                            <div key={field} className="space-y-2 py-3">
                                                 <Label htmlFor={field} className="text-base font-medium text-gray-900">
                                                     {label}
                                                 </Label>
@@ -1305,7 +1306,7 @@ const { auth, industries, industryChildren } = usePage<Props>().props;
                             )}
 
                                     {/* Real Estate Type */}
-                                    <div className="space-y-2">
+                                    <div className="space-y-2 py-3">
                                         <Label htmlFor="real_estate_type">Real Estate Type *</Label>
                                         <Select
                                             value={String(form.data.real_estate_type || '')}
@@ -1328,7 +1329,7 @@ const { auth, industries, industryChildren } = usePage<Props>().props;
                                     </div>
 
                                 {/* Lease Expiration */}
-                                <div className="space-y-2">
+                                <div className="space-y-2 py-3"> 
                                     <Label htmlFor="lease_expiration">Lease Expiration *</Label>
                                     <Input
                                         id="lease_expiration"
