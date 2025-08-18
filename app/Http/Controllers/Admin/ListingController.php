@@ -18,8 +18,8 @@ class ListingController extends Controller
     {
         // Get all users who have listings for the member search dropdown
         $users = User::whereHas('listings')
-            ->select('id', 'name', 'email')
-            ->orderBy('name')
+            ->select('id', 'first_name', 'last_name', 'email')
+            ->orderBy('first_name')
             ->get();
 
         // Only fetch listings if a user is selected
@@ -123,7 +123,7 @@ class ListingController extends Controller
      */
     public function edit(Listing $listing)
     {        
-        $sellers = User::select('id', 'name', 'email')->get();
+        $sellers = User::select('id', 'first_name', 'last_name', 'email')->get();
         
         return Inertia::render('Admin/Listings/Edit', [
             'listing' => $listing,

@@ -24,7 +24,8 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'phone',
         'password',
@@ -69,6 +70,13 @@ class User extends Authenticatable implements MustVerifyEmail
             'broker_upgraded_at' => 'datetime',
         ];
     }
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = ['name', 'full_name'];
 
     // Helper methods to check user role
     public function isAdmin(): bool
@@ -133,5 +141,26 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isInterestedIn(int $listingId): bool
     {
         return $this->interestedListings()->where('listing_id', $listingId)->exists();
+    }
+
+    /**
+     * Get the user's full name by combining first and last name.
+     * This maintains backward compatibility with existing code that uses $user->name
+     *
+     * @return string
+     */
+    public function getNameAttribute(): string
+    {
+        return trim($this->first_name . ' ' . $this->last_name);
+    }
+
+    /**
+     * Get the user's full name.
+     *
+     * @return string
+     */
+    public function getFullNameAttribute(): string
+    {
+        return $this->name;
     }
 }

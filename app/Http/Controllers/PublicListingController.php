@@ -15,7 +15,7 @@ class PublicListingController extends Controller
         // Get verified brokers for the welcome page
         $brokers = User::where('is_broker', true)
             ->whereNotNull('broker_upgraded_at')
-            ->select(['id', 'name', 'company_name', 'serving_area', 'profile_photo', 'bio', 'broker_phone'])
+            ->select(['id', 'first_name', 'last_name', 'company_name', 'serving_area', 'profile_photo', 'bio', 'broker_phone'])
             ->orderBy('broker_upgraded_at', 'desc')
             ->limit(3) // Show top 3 brokers on welcome page
             ->get()
@@ -94,14 +94,14 @@ class PublicListingController extends Controller
         // Get verified brokers for the homepage directory
         $brokers = User::where('is_broker', true)
             ->whereNotNull('broker_upgraded_at')
-            ->select(['id', 'name', 'company_name', 'serving_area', 'profile_photo', 'bio', 'broker_phone'])
+            ->select(['id', 'first_name', 'last_name', 'company_name', 'serving_area', 'profile_photo', 'bio', 'broker_phone'])
             ->orderBy('broker_upgraded_at', 'desc')
             ->limit(6) // Show top 6 brokers
             ->get()
             ->map(function ($broker) {
                 return [
                     'id' => $broker->id,
-                    'name' => $broker->name,
+                    'name' => $broker->name, // This will use the accessor method
                     'company_name' => $broker->company_name,
                     'serving_area' => $broker->serving_area,
                     'bio' => $broker->bio ? substr($broker->bio, 0, 150) . '...' : null,
@@ -213,7 +213,7 @@ class PublicListingController extends Controller
     {
         $brokers = User::where('is_broker', true)
             ->whereNotNull('broker_upgraded_at')
-            ->select(['id', 'name', 'company_name', 'serving_area', 'profile_photo', 'bio', 'broker_phone', 'website'])
+            ->select(['id', 'first_name', 'last_name', 'company_name', 'serving_area', 'profile_photo', 'bio', 'broker_phone', 'website'])
             ->orderBy('broker_upgraded_at', 'desc')
             ->paginate(12)
             ->through(function ($broker) {

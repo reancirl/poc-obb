@@ -35,7 +35,9 @@ export interface SharedData {
 
 export interface User {
     id: number;
-    name: string;
+    name: string; // Computed from first_name + last_name
+    first_name: string;
+    last_name: string;
     email: string;
     phone?: string;
     avatar?: string;

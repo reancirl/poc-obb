@@ -6,7 +6,7 @@ export default function MemberDashboard({ user }: { user: any }) {
     return (
         <AppLayout>
             <Head title="Member Dashboard" />
-            <div className="container mx-auto py-6">
+            <div className="container mx-auto p-6">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold">Member Dashboard</h1>
                     <p className="text-muted-foreground">Welcome back, {user.name}!</p>

@@ -6,7 +6,8 @@ import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 
 type RegisterForm = {
-    name: string;
+    first_name: string;
+    last_name: string;
     email: string;
     phone: string;
     password: string;
@@ -16,7 +17,8 @@ type RegisterForm = {
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm<Required<RegisterForm>>({
-        name: '',
+        first_name: '',
+        last_name: '',
         email: '',
         phone: '',
         password: '',
@@ -44,22 +46,40 @@ export default function Register() {
                 <form className="w-full max-w-md" onSubmit={submit}>
                     <div className="space-y-6">
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                                Name
+                            <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">
+                                First Name
                             </label>
                             <input
-                                id="name"
+                                id="first_name"
                                 type="text"
                                 required
                                 autoFocus
-                                autoComplete="name"
-                                value={data.name}
-                                onChange={(e) => setData('name', e.target.value)}
+                                autoComplete="given-name"
+                                value={data.first_name}
+                                onChange={(e) => setData('first_name', e.target.value)}
                                 disabled={processing}
-                                placeholder="Full name"
+                                placeholder="First name"
                                 className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#010079] focus:border-[#010079]"
                             />
-                            <InputError message={errors.name} className="mt-1" />
+                            <InputError message={errors.first_name} className="mt-1" />
+                        </div>
+
+                        <div>
+                            <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">
+                                Last Name
+                            </label>
+                            <input
+                                id="last_name"
+                                type="text"
+                                required
+                                autoComplete="family-name"
+                                value={data.last_name}
+                                onChange={(e) => setData('last_name', e.target.value)}
+                                disabled={processing}
+                                placeholder="Last name"
+                                className="mt-1 block w-full border border-gray-300 rounded-lg p-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#010079] focus:border-[#010079]"
+                            />
+                            <InputError message={errors.last_name} className="mt-1" />
                         </div>
 
 
@@ -143,7 +163,7 @@ export default function Register() {
                             disabled={processing}
                         >
                             {processing && <LoaderCircle className="animate-spin w-4 h-4 mr-2" />}
-                            Get started For Free
+                            Get Started For Free
                         </button>
                         <p className="text-xs text-gray-500 text-center mt-2">
                             No credit card required
