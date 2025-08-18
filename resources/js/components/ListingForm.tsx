@@ -23,6 +23,7 @@ interface ListingFormProps {
   onCancel: () => void;
   listingTypes: string[];
   industries: string[];
+  industryChildren?: Record<string, Record<string, string>>;
   locationConfidentialityOptions: string[];
   realEstateTypes: string[];
   user: User;
@@ -36,6 +37,7 @@ export default function ListingForm({
   onCancel,
   listingTypes,
   industries,
+  industryChildren,
   locationConfidentialityOptions,
   realEstateTypes,
   user,
@@ -80,29 +82,34 @@ export default function ListingForm({
       {/* Basic Information */}
       <div className="bg-white shadow rounded-lg p-6">
         <h2 className="text-lg font-medium mb-6">Basic Information</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Headline */}
-          <div className="space-y-2">
-            <Label htmlFor="headline">Headline *</Label>
-            <Input
-              id="headline"
-              name="headline"
-              value={(data.headline as string) || ''}
-              onChange={handleChange}
-              required
-            />
-            {errors.headline && (
-              <p className="text-sm text-red-500">{errors.headline}</p>
-            )}
-          </div>
+        {/* Headline - Full Width Row */}
+        <div className="space-y-2 py-3">
+          <Label htmlFor="headline">Headline *</Label>
+          <Input
+            id="headline"
+            name="headline"
+            value={(data.headline as string) || ''}
+            onChange={handleChange}
+            required
+          />
+          {errors.headline && (
+            <p className="text-sm text-red-500">{errors.headline}</p>
+          )}
+        </div>
 
+        {/* Industry and Subcategory - Same Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-3">
           {/* Industry */}
           <div className="space-y-2">
-            <Label htmlFor="industry">Industry *</Label>
+            <Label htmlFor="industry">Industry Category *</Label>
             <SearchableSelect
               options={industries}
               value={String(data.industry || '')}
-              onChange={handleSelect('industry')}
+              onChange={(value) => {
+                handleSelect('industry')(value);
+                // Clear subcategory when industry changes
+                handleSelect('industry_subcategory')('');
+              }}
               placeholder="Search and select industry..."
               required
             />
@@ -110,6 +117,26 @@ export default function ListingForm({
               <p className="text-sm text-red-500">{errors.industry}</p>
             )}
           </div>
+
+          {/* Industry Subcategory */}
+          <div className="space-y-2">
+            <Label htmlFor="industry_subcategory">Industry Subcategory</Label>
+            <SearchableSelect
+              options={data.industry && industryChildren && industryChildren[data.industry as string] 
+                ? Object.values(industryChildren[data.industry as string])
+                : []
+              }
+              value={String(data.industry_subcategory || '')}
+              onChange={handleSelect('industry_subcategory')}
+              placeholder={data.industry ? "Select a subcategory..." : "First select an industry above"}
+            />
+            {errors.industry_subcategory && (
+              <p className="text-sm text-red-500">{errors.industry_subcategory}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-3">
 
           {/* Listing Type */}
           <div className="space-y-2">

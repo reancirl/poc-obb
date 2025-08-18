@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Member;
 
 use App\Http\Controllers\Controller;
 use App\Models\Listing;
+use App\Constants\Industry;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -44,7 +45,15 @@ class ListingController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Member/Listings/Create');
+        return Inertia::render('Member/Listings/Create', [
+            'industries' => array_values(Industry::parentLabels()),
+            'industryChildren' => array_combine(
+                array_values(Industry::parentLabels()),
+                array_map(function($children) {
+                    return array_values($children);
+                }, array_values(Industry::CHILDREN))
+            ),
+        ]);
     }
 
     /**
@@ -55,6 +64,7 @@ class ListingController extends Controller
         $validated = $request->validate([
             'headline' => 'required|string|max:255',
             'industry' => 'required|string|max:255',
+            'industry_subcategory' => 'nullable|string|max:255',
             'listing_type' => 'required|string|in:Established Business for Sale,Asset Sale,Business Real Estate for Sale (No Business Included),Business Real Estate for Lease (No Business Included),Startup Opportunity',
             'location_name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
@@ -166,6 +176,8 @@ class ListingController extends Controller
         
         return Inertia::render('Member/Listings/Edit', [
             'listing' => $listing->append('image_urls'),
+            'industries' => array_values(Industry::parentLabels()),
+            'industryChildren' => Industry::CHILDREN,
         ]);
     }
 
@@ -177,6 +189,7 @@ class ListingController extends Controller
         $validated = $request->validate([
             'headline' => 'required|string|max:255',
             'industry' => 'required|string|max:255',
+            'industry_subcategory' => 'nullable|string|max:255',
             'listing_type' => 'required|string|in:Established Business for Sale,Asset Sale,Business Real Estate for Sale (No Business Included),Business Real Estate for Lease (No Business Included),Startup Opportunity',
             'location_name' => 'required|string|max:255',
             'address' => 'required|string|max:255',

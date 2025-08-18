@@ -162,9 +162,11 @@ type Listing = {
 
 interface Props extends SharedData {
   listing: Listing;
+  industries: string[];
+  industryChildren: Record<string, Record<string, string>>;
 }
 
-export default function EditListing({ listing, auth }: Props) {
+export default function EditListing({ listing, auth, industries, industryChildren }: Props) {
   const [currentStep, setCurrentStep] = useState(1);
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [deletedImageIds, setDeletedImageIds] = useState<number[]>([]);
@@ -250,6 +252,7 @@ export default function EditListing({ listing, auth }: Props) {
   const form = useForm<FormData>({
     headline: listing.headline ?? '',
     industry: listing.industry ?? '',
+    industry_subcategory: listing.industry_subcategory ?? '',
     listing_type: listing.listing_type ?? '',
     location_name: listing.location_name ?? '',
     address: listing.address ?? '',
@@ -406,18 +409,8 @@ export default function EditListing({ listing, auth }: Props) {
     'Startup Opportunity'
   ];
 
-  const industries = [
-    'IT & Software',
-    'Healthcare',
-    'Retail & E-commerce',
-    'Education & Training',
-    'Hospitality & Tourism',
-    'Manufacturing',
-    'Finance & Insurance',
-    'Real Estate',
-    'Construction & Contractors',
-    'Food & Beverage'
-  ];
+  // Industries are now passed from the backend via Industry constants
+  const sortedIndustries = [...industries].sort();
 
   // Step-specific validation functions
   const validateStep1 = (): boolean => {
@@ -740,7 +733,8 @@ export default function EditListing({ listing, auth }: Props) {
                 errors={form.errors}
                 processing={form.processing} 
                 listingTypes={listingTypes} 
-                industries={industries}
+                industries={sortedIndustries}
+                industryChildren={industryChildren}
                 locationConfidentialityOptions={locationConfidentialityOptions}
                 realEstateTypes={realEstateTypes} 
                 user={auth.user} 
@@ -883,7 +877,7 @@ export default function EditListing({ listing, auth }: Props) {
                       type="text"
                       placeholder="$0"
                       value={String(form.data.asking_price || '')}
-                      onChange={(e) => form.setData('asking_price', e.target.value)}
+                      onChange={(e) => form.setData('asking_price', Number(e.target.value) || 0)}
                       className="mt-2"
                     />
                     {form.errors.asking_price && (
@@ -913,7 +907,7 @@ export default function EditListing({ listing, auth }: Props) {
                       type="text"
                       placeholder="$0"
                       value={String(form.data.cash_flow || '')}
-                      onChange={(e) => form.setData('cash_flow', e.target.value)}
+                      onChange={(e) => form.setData('cash_flow', Number(e.target.value) || 0)}
                       className="mt-2"
                     />
                     {form.errors.cash_flow && (
@@ -943,7 +937,7 @@ export default function EditListing({ listing, auth }: Props) {
                       type="text"
                       placeholder="$0"
                       value={String(form.data.ebitda || '')}
-                      onChange={(e) => form.setData('ebitda', e.target.value)}
+                      onChange={(e) => form.setData('ebitda', Number(e.target.value) || 0)}
                       className="mt-2"
                     />
                     {form.errors.ebitda && (
@@ -967,7 +961,7 @@ export default function EditListing({ listing, auth }: Props) {
                   type="text"
                   placeholder="$0"
                   value={String(form.data.gross_revenue || '')}
-                  onChange={(e) => form.setData('gross_revenue', e.target.value)}
+                  onChange={(e) => form.setData('gross_revenue', Number(e.target.value) || 0)}
                 />
                 {form.errors.gross_revenue && (
                   <p className="text-sm text-red-500">{form.errors.gross_revenue}</p>
@@ -1003,7 +997,7 @@ export default function EditListing({ listing, auth }: Props) {
                   type="text"
                   placeholder="$0"
                   value={String(form.data.ffe || '')}
-                  onChange={(e) => form.setData('ffe', e.target.value)}
+                  onChange={(e) => form.setData('ffe', Number(e.target.value) || 0)}
                 />
                 {form.errors.ffe && (
                   <p className="text-sm text-red-500">{form.errors.ffe}</p>
@@ -1090,7 +1084,7 @@ export default function EditListing({ listing, auth }: Props) {
                             type="text"
                             placeholder="$0"
                             value={String(form.data.asking_price || '')}
-                            onChange={(e) => form.setData('asking_price', e.target.value)}
+                            onChange={(e) => form.setData('asking_price', Number(e.target.value) || 0)}
                             className="mt-2"
                           />
                           {form.errors.asking_price && (
@@ -1120,7 +1114,7 @@ export default function EditListing({ listing, auth }: Props) {
                             type="text"
                             placeholder="$0"
                             value={String(form.data.cash_flow || '')}
-                            onChange={(e) => form.setData('cash_flow', e.target.value)}
+                            onChange={(e) => form.setData('cash_flow', Number(e.target.value) || 0)}
                             className="mt-2"
                           />
                           {form.errors.cash_flow && (
@@ -1150,7 +1144,7 @@ export default function EditListing({ listing, auth }: Props) {
                             type="text"
                             placeholder="$0"
                             value={String(form.data.ebitda || '')}
-                            onChange={(e) => form.setData('ebitda', e.target.value)}
+                            onChange={(e) => form.setData('ebitda', Number(e.target.value) || 0)}
                             className="mt-2"
                           />
                           {form.errors.ebitda && (
@@ -1174,7 +1168,7 @@ export default function EditListing({ listing, auth }: Props) {
                         type="text"
                         placeholder="$0"
                         value={String(form.data.gross_revenue || '')}
-                        onChange={(e) => form.setData('gross_revenue', e.target.value)}
+                        onChange={(e) => form.setData('gross_revenue', Number(e.target.value) || 0)}
                       />
                       {form.errors.gross_revenue && (
                         <p className="text-sm text-red-500">{form.errors.gross_revenue}</p>
@@ -1210,7 +1204,7 @@ export default function EditListing({ listing, auth }: Props) {
                         type="text"
                         placeholder="$0"
                         value={String(form.data.ffe || '')}
-                        onChange={(e) => form.setData('ffe', e.target.value)}
+                        onChange={(e) => form.setData('ffe', Number(e.target.value) || 0)}
                       />
                       {form.errors.ffe && (
                         <p className="text-sm text-red-500">{form.errors.ffe}</p>

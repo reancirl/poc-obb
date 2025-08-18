@@ -10,6 +10,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { type SharedData } from '@/types';
 
+interface Props extends SharedData {
+  industries: string[];
+  industryChildren: Record<string, Record<string, string>>;
+}
+
 type FileWithPreview = File & {
 preview: string;
 isPrimary: boolean;
@@ -19,7 +24,7 @@ size: number;
 };
 
 export default function CreateListing() {
-const { auth } = usePage<SharedData>().props;
+const { auth, industries, industryChildren } = usePage<Props>().props;
     const [currentStep, setCurrentStep] = useState(1);
     const [files, setFiles] = useState<FileWithPreview[]>([]);
         const [isUploading, setIsUploading] = useState(false);
@@ -75,26 +80,8 @@ const { auth } = usePage<SharedData>().props;
         'Startup Opportunity'
         ];
 
-        const industries = [
-        'IT & Software',
-        'Healthcare',
-        'Retail & E-commerce',
-        'Education & Training',
-        'Hospitality & Tourism',
-        'Manufacturing',
-        'Finance & Insurance',
-        'Real Estate',
-        'Construction & Contractors',
-        'Food & Beverage',
-        'Agriculture',
-        'Automotive and Boat',
-        'Beauty and Personal Care',
-        'Communication and Media',
-        'Pet Services',
-        'Service Businesses',
-        'Transportation and Storage',
-        'Wholesale and Distributors'
-        ];
+        // Industries are now passed from the backend via Industry constants
+        const sortedIndustries = [...industries].sort();
 
         const locationConfidentialityOptions = [
         'Show my full location (most visibility)',
@@ -107,7 +94,8 @@ const { auth } = usePage<SharedData>().props;
 
         const form = useForm<FormData>({
             listing_type: 'Established Business for Sale', // Default to first option
-            industry: 'IT & Software', // Default to first option
+            industry: 'Online & Technology', // Default to first option that matches Industry constants
+            industry_subcategory: '',
             location_confidentiality: 'Public', // Default to first option
             real_estate_type: '',
             headline: '',
@@ -580,7 +568,8 @@ const { auth } = usePage<SharedData>().props;
             <div className="space-y-6">
                 <form onSubmit={submit} className="space-y-6">
                     <ListingForm data={form.data} setData={form.setData} errors={form.errors}
-                        processing={form.processing} listingTypes={listingTypes} industries={industries}
+                        processing={form.processing} listingTypes={listingTypes} industries={sortedIndustries}
+                        industryChildren={industryChildren}
                         locationConfidentialityOptions={locationConfidentialityOptions}
                         realEstateTypes={realEstateTypes} user={auth.user} onCancel={cancel} />
 

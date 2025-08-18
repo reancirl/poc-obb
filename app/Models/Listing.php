@@ -16,6 +16,7 @@ class Listing extends Model
         'user_id',
         'headline',
         'industry',
+        'industry_subcategory',
         'listing_type',
         'location_name',
         'address',
