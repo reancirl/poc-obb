@@ -100,7 +100,6 @@ class BrokerUpgradeController extends Controller
         if (!$user->is_broker) {
             return redirect()->route('broker.upgrade');
         }
-
         $request->validate([
             'company_name' => 'required|string|max:255',
             'broker_phone' => 'required|string|max:20',

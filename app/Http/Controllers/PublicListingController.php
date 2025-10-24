@@ -14,31 +14,63 @@ class PublicListingController extends Controller
 {
     public function welcome()
     {
-        // Get verified brokers for the welcome page
         $brokers = User::where('is_broker', true)
             ->whereNotNull('broker_upgraded_at')
-            ->select(['id', 'first_name', 'last_name', 'company_name', 'serving_area', 'profile_photo', 'bio', 'broker_phone'])
+            ->select([
+                'id',
+                'first_name',
+                'last_name',
+                'company_name',
+                'serving_area',
+                'profile_photo',
+                'bio',
+                'broker_phone'
+            ])
             ->orderBy('broker_upgraded_at', 'desc')
-            ->limit(3) // Show top 3 brokers on welcome page
+            ->limit(3)
             ->get()
             ->map(function ($broker) {
                 return [
                     'id' => $broker->id,
-                    'name' => $broker->name,
+                    'name' => trim("{$broker->first_name} {$broker->last_name}"),
                     'company_name' => $broker->company_name,
                     'serving_area' => $broker->serving_area,
                     'bio' => $broker->bio ? substr($broker->bio, 0, 120) . '...' : null,
-                    'profile_photo' => $broker->profile_photo ? asset('storage/' . $broker->profile_photo) : null,
+                    'profile_photo' => $broker->profile_photo
+                        ? asset('storage/' . $broker->profile_photo)
+                        : asset('images/FullLogo_NoBuffer.png'),
                     'phone' => $broker->broker_phone,
                 ];
             });
-
+        
+             // ✅ Fetch latest published listings
+            $latestListings = Listing::with('images')
+                ->where('status', 'published')
+                ->latest()
+                ->take(3)
+                ->get()
+                ->map(function ($listing) {
+                    return [
+                        'id' => $listing->id,
+                        'headline' => $listing->headline,
+                        'asking_price' => $listing->asking_price,
+                        'industry' => $listing->industry,
+                        'location_name' => $listing->location_name,
+                        'image' => $listing->images()->where('is_primary', true)->first()?->url
+                        ? asset('storage/' . $listing->images()->where('is_primary', true)->first()->path)
+                        : ($listing->images()->first()
+                            ? asset('storage/' . $listing->images()->first()->path)
+                            : asset('images/default_listing.jpg')),
+                    ];
+                });
         return Inertia::render('welcome', [
             'brokers' => $brokers,
             'industries' => array_values(Industry::parentLabels()),
             'states' => USStates::getStateNames(),
+            'latestListings' => $latestListings,
         ]);
     }
+
     /**
      * Display a listing of published listings.
      */

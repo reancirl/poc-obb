@@ -46,7 +46,9 @@ export default function BrokerUpgrade() {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('broker.upgrade'));
+        post(route('broker.upgrade.store'), {
+        forceFormData: true,
+    });
     };
 
     return (

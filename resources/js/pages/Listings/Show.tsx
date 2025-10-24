@@ -274,7 +274,7 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
   };
 
   return (
-    <PublicLayout>
+    <PublicLayout auth={auth}>
       <Head title={listing.headline} />
       
       <div className="">
@@ -367,450 +367,289 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
                 {/* Left side - Images and details */}
                 <div className="lg:col-span-2">
-                  {/* Image gallery with better styling */}
+                  {/* Image gallery redesigned to match Figma layout */}
                   {listing.image_urls && listing.image_urls.length > 0 ? (
-                    <div className="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                    <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm mb-8">
                       {/* Main selected image */}
-                      <div className="relative h-96 overflow-hidden border-b border-gray-200">
-                        <img 
-                          src={selectedImageIndex !== null ? listing.image_urls[selectedImageIndex].url : ''} 
+                      <div className="rounded-2xl overflow-hidden mb-4">
+                        <img
+                          src={
+                            selectedImageIndex !== null
+                              ? listing.image_urls[selectedImageIndex].url
+                              : listing.image_urls[0].url
+                          }
                           alt={listing.headline}
-                          className="w-full h-full object-contain bg-gray-100"
+                          className="w-full h-[400px] object-cover"
                         />
-                        
-                        {/* Image counter */}
-                        <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
-                          {selectedImageIndex !== null ? selectedImageIndex + 1 : 1} / {listing.image_urls.length}
-                        </div>
                       </div>
-                      
-                      {/* Thumbnail gallery */}
-                      {listing.image_urls.length > 1 && (
-                        <div className="flex overflow-x-auto p-2 bg-gray-50 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-                          {listing.image_urls.map((image, index) => (
-                            <div 
-                              key={image.id} 
-                              className={`flex-shrink-0 cursor-pointer w-24 h-24 mx-1 rounded-md overflow-hidden border-2 ${selectedImageIndex === index ? 'border-[#010079]' : 'border-transparent'}`}
+
+                      {/* Thumbnail gallery (3 max + placeholders if missing) */}
+                      <div className="grid grid-cols-3 gap-4">
+                        {[0, 1, 2].map((index) => {
+                          const image = listing.image_urls[index];
+                          return image ? (
+                            <div
+                              key={image.id}
+                              className={`rounded-2xl overflow-hidden cursor-pointer border-2 transition-all duration-200 ${
+                                selectedImageIndex === index
+                                  ? 'border-[#0B2254]'
+                                  : 'border-gray-200 hover:border-[#0B2254]/50'
+                              }`}
                               onClick={() => setSelectedImageIndex(index)}
                             >
-                              <img 
-                                src={image.url} 
-                                alt={`${listing.headline} - Image ${index + 1}`} 
-                                className="w-full h-full object-cover"
+                              <img
+                                src={image.url}
+                                alt={`${listing.headline} - Image ${index + 1}`}
+                                className="w-full h-32 object-cover hover:scale-105 transition-transform duration-300"
                               />
                             </div>
-                          ))}
-                        </div>
-                      )}
+                          ) : (
+                            <div
+                              key={`placeholder-${index}`}
+                              className="rounded-2xl h-32 bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400"
+                            >
+                              <svg
+                                className="w-8 h-8"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="1.5"
+                                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2
+                                  l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6
+                                  20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0
+                                  00-2 2v12a2 2 0 002 2z"
+                                />
+                              </svg>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   ) : (
-                    <div className="mb-8 bg-gray-100 border border-gray-200 rounded-lg h-96 flex items-center justify-center shadow-sm">
+                    <div className="mb-8 bg-gray-100 border border-gray-200 rounded-2xl h-96 flex items-center justify-center shadow-sm">
                       <div className="text-gray-400 flex flex-col items-center">
-                        <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <svg
+                          className="w-16 h-16"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16
+                              16m-2-2l1.586-1.586a2 2 0 012.828 0L20
+                              14m-6-6h.01M6 20h12a2 2 0 002-2V6a2
+                              2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0
+                              002 2z"
+                          />
                         </svg>
                         <p className="mt-2">No images available</p>
                       </div>
                     </div>
                   )}
                   
-                  {/* Business overview */}
-                  <div className="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                    <div className="p-6">
-                      <h2 className="text-xl font-bold text-gray-900 mb-4">Business Overview</h2>
-                      {listing.business_description ? (
-                        <div className="prose max-w-none text-gray-700">
-                          <p className="whitespace-pre-line">{listing.business_description}</p>
-                        </div>
-                      ) : (
-                        <p className="text-gray-500">No business description provided.</p>
-                      )}
+                  {/* Business Overview Section */}
+                  <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-10">
+                    {/* Title & Location */}
+                    <h1 className="text-2xl font-bold text-[#003366] mb-1">
+                      {listing.headline || 'FULL-SERVICE CAR WASH, Near major intersection'}
+                    </h1>
+                    <p className="text-gray-700 mb-4 border-b border-gray-200 pb-3">
+                      {locationDisplay.locationText || 'Moreno Valley, CA (Riverside County)'}
+                    </p>
+
+                    {/* Key Metrics */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-2 mb-6">
+                      <div>
+                        <p className="text-[#003366] font-semibold">
+                          Asking Price:
+                          <span className="text-[#0056B3] font-bold ml-1">
+                            {listing.asking_price ? formatCurrency(listing.asking_price) : 'Not Disclosed'}
+                          </span>
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[#003366] font-semibold">
+                          Cash Flow (SDE):
+                          <span className="text-gray-700 font-medium ml-1">
+                            {listing.cash_flow ? formatCurrency(listing.cash_flow) : 'Not Disclosed'}
+                          </span>
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[#003366] font-semibold">
+                          EBITDA:
+                          <span className="text-gray-700 font-medium ml-1">
+                            {listing.ebitda || 'Not Disclosed'}
+                          </span>
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[#003366] font-semibold">
+                          Gross Revenue:
+                          <span className="text-gray-700 font-medium ml-1">
+                            {listing.gross_revenue ? formatCurrency(listing.gross_revenue) : 'Not Disclosed'}
+                          </span>
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[#003366] font-semibold">
+                          Established:
+                          <span className="text-gray-700 font-medium ml-1">
+                            {listing.year_established || 'Not Disclosed'}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Business Description */}
+                    <div className="mt-6 border-t border-gray-200 pt-4">
+                      <h2 className="text-lg font-bold text-[#003366] mb-3">Business Description</h2>
+                      <div className="text-gray-700 whitespace-pre-line leading-relaxed">
+                        {listing.business_description ? (
+                          <p>{listing.business_description}</p>
+                        ) : (
+                          <p>No business description provided.</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-wrap items-center gap-4 mt-6 border-t border-gray-200 pt-4 text-sm text-gray-600">
+                      <button className="flex items-center gap-1 hover:text-[#0056B3] transition">
+                        <i className="fa-regular fa-heart"></i> Save
+                      </button>
+                      <button className="flex items-center gap-1 hover:text-[#0056B3] transition">
+                        <i className="fa-solid fa-print"></i> Print
+                      </button>
+                      <button className="flex items-center gap-1 hover:text-[#0056B3] transition">
+                        <i className="fa-solid fa-share-nodes"></i> Share
+                      </button>
+                      <button className="flex items-center gap-1 hover:text-[#0056B3] transition">
+                        <i className="fa-solid fa-file-lines"></i> Evaluation Report
+                      </button>
                     </div>
                   </div>
-                  
-                  {/* Financial details */}
-                  <div className="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                    <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                      <h2 className="text-xl font-bold text-gray-900">Financial Details</h2>
-                    </div>
-                    <div className="p-6">
-                      <dl className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {renderDetail('Asking Price', listing.asking_price, true)}
-                        {renderDetail('Cash Flow (SDE)', listing.cash_flow, true)}
-                        {renderDetail('Gross Revenue', listing.gross_revenue, true)}
-                        {renderDetail('EBITDA', listing.ebitda)}
-                        {renderDetail('FF&E (Furniture, Fixtures & Equipment)', listing.ffe, true)}
-                        {renderDetail('Inventory Value', listing.inventory_value, true)}
-                        {renderDetail('Rent', listing.rent, true)}
-                        {renderDetail('Year Established', listing.year_established)}
-                        {listing.seller_financing_available !== null && (
-                          <div>
-                            <dt className="text-sm font-medium text-gray-500">Seller Financing Available</dt>
-                            <dd className="mt-1 text-sm text-gray-900">
-                              {listing.seller_financing_available ? 'Yes' : 'No'}
-                            </dd>
-                          </div>
-                        )}
-                        {listing.inventory_included_in_asking_price !== null && (
-                          <div>
-                            <dt className="text-sm font-medium text-gray-500">Inventory Included in Asking Price</dt>
-                            <dd className="mt-1 text-sm text-gray-900">
-                              {listing.inventory_included_in_asking_price ? 'Yes' : 'No'}
-                            </dd>
-                          </div>
-                        )}
-                      </dl>
-                      {listing.financing_notes && (
-                        <div className="mt-6 pt-6 border-t border-gray-200">
-                          <h3 className="text-sm font-medium text-gray-900 mb-2">Financing Notes</h3>
-                          <p className="text-sm text-gray-700 whitespace-pre-line">{listing.financing_notes}</p>
-                        </div>
-                      )}
-                    </div>
+
+                  {/* Detailed Information */}
+                  <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-10">
+                    <h2 className="text-lg font-bold text-[#003366] mb-4">Detailed Information</h2>
+                    <dl className="space-y-2 text-sm">
+                      <div className="flex items-center">
+                        <i className="fa-solid fa-location-dot text-[#0056B3] mr-2"></i>
+                        <dt className="font-medium text-gray-700 w-32">Location:</dt>
+                        <dd className="text-gray-900">{locationDisplay.locationText || 'Not disclosed'}</dd>
+                      </div>
+                      <div className="flex items-center">
+                        <i className="fa-solid fa-chart-bar text-[#0056B3] mr-2"></i>
+                        <dt className="font-medium text-gray-700 w-32">Listing Statistics:</dt>
+                        <dd className="text-[#0056B3] cursor-pointer hover:underline">Unlock</dd>
+                      </div>
+                      <div className="flex items-center">
+                        <i className="fa-solid fa-users text-[#0056B3] mr-2"></i>
+                        <dt className="font-medium text-gray-700 w-32">Demographic Info:</dt>
+                        <dd className="text-[#0056B3] cursor-pointer hover:underline">Unlock</dd>
+                      </div>
+                    </dl>
+
+                    <p className="text-xs text-gray-500 mt-6 leading-snug">
+                      The information in this listing has been provided by the business seller or representative stated above. Monarch has no stake in the sale of this business, has not independently verified any of the information, and assumes no responsibility for its accuracy or completeness.
+                      <br />
+                      Read Monarch <a href="#" className="underline text-[#0056B3]">Terms of Use</a> before responding to any ad. Learn how to avoid <a href="#" className="underline text-[#0056B3]">scams</a>.
+                    </p>
                   </div>
-                  
-                  {/* Business details */}
-                  <div className="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                    <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                      <h2 className="text-xl font-bold text-gray-900">Business Details</h2>
-                    </div>
-                    <div className="p-6">
-                      <dl className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {renderDetail('Location', locationDisplay.locationText)}
-                        {renderDetail('Industry', listing.industry)}
-                        {renderDetail('Listing Type', listing.listing_type)}
-                        {renderDetail('Real Estate Type', listing.real_estate_type)}
-                        {renderDetail('Building Size', listing.building_size ? `${listing.building_size} sq ft` : null)}
-                        {renderDetail('Lease Expiration', listing.lease_expiration)}
-                        {renderDetail('Employees', listing.employees)}
-                        {renderDetail('Inventory', listing.inventory, true)}
-                        {listing.absentee_owner !== null && (
-                          <div>
-                            <dt className="text-sm font-medium text-gray-500">Absentee Owner</dt>
-                            <dd className="mt-1 text-sm text-gray-900">
-                              {listing.absentee_owner ? 'Yes' : 'No'}
-                            </dd>
-                          </div>
-                        )}
-                        {listing.home_based !== null && (
-                          <div>
-                            <dt className="text-sm font-medium text-gray-500">Home-Based Business</dt>
-                            <dd className="mt-1 text-sm text-gray-900">
-                              {listing.home_based ? 'Yes' : 'No'}
-                            </dd>
-                          </div>
-                        )}
-                        {listing.relocatable !== null && (
-                          <div>
-                            <dt className="text-sm font-medium text-gray-500">Relocatable</dt>
-                            <dd className="mt-1 text-sm text-gray-900">
-                              {listing.relocatable ? 'Yes' : 'No'}
-                            </dd>
-                          </div>
-                        )}
-                        {listing.established_franchise !== null && (
-                          <div>
-                            <dt className="text-sm font-medium text-gray-500">Established Franchise</dt>
-                            <dd className="mt-1 text-sm text-gray-900">
-                              {listing.established_franchise ? 'Yes' : 'No'}
-                            </dd>
-                          </div>
-                        )}
-                        {listing.business_website && (
-                          <div>
-                            <dt className="text-sm font-medium text-gray-500">Business Website</dt>
-                            <dd className="mt-1 text-sm text-gray-900">
-                              {listing.website_confidential ? 
-                                'Available upon request (confidential)' : 
-                                <a href={listing.business_website.startsWith('http') ? listing.business_website : `https://${listing.business_website}`} 
-                                   target="_blank" rel="noopener noreferrer" 
-                                   className="text-blue-600 hover:text-blue-800 underline">
-                                  {listing.business_website}
-                                </a>
-                              }
-                            </dd>
-                          </div>
-                        )}
-                      </dl>
-                    </div>
-                  </div>
-                  
-                  {/* Additional information sections - only show if data exists */}
-                  {listing.facilities && (
-                    <div className="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                      <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                        <h2 className="text-xl font-bold text-gray-900">Facilities</h2>
-                      </div>
-                      <div className="p-6">
-                        <p className="text-gray-700 whitespace-pre-line">{listing.facilities}</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {listing.competition && (
-                    <div className="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                      <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                        <h2 className="text-xl font-bold text-gray-900">Competition</h2>
-                      </div>
-                      <div className="p-6">
-                        <p className="text-gray-700 whitespace-pre-line">{listing.competition}</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {listing.growth_expansion && (
-                    <div className="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                      <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                        <h2 className="text-xl font-bold text-gray-900">Growth & Expansion Opportunities</h2>
-                      </div>
-                      <div className="p-6">
-                        <p className="text-gray-700 whitespace-pre-line">{listing.growth_expansion}</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {listing.reason_for_selling && (
-                    <div className="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                      <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                        <h2 className="text-xl font-bold text-gray-900">Reason for Selling</h2>
-                      </div>
-                      <div className="p-6">
-                        <p className="text-gray-700 whitespace-pre-line">{listing.reason_for_selling}</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Social Media & Online Presence */}
-                  {(listing.website || listing.facebook || listing.twitter || listing.linkedin || listing.instagram || listing.youtube || listing.other_social_media) && (
-                    <div className="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                      <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                        <h2 className="text-xl font-bold text-gray-900">Social Media & Online Presence</h2>
-                      </div>
-                      <div className="p-6">
-                        <dl className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {listing.website && (
-                            <div>
-                              <dt className="text-sm font-medium text-gray-500">Website</dt>
-                              <dd className="mt-1 text-sm text-gray-900">
-                                <a href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`} 
-                                   target="_blank" rel="noopener noreferrer" 
-                                   className="text-blue-600 hover:text-blue-800 underline">
-                                  {listing.website}
-                                </a>
-                              </dd>
-                            </div>
-                          )}
-                          {listing.facebook && (
-                            <div>
-                              <dt className="text-sm font-medium text-gray-500">Facebook</dt>
-                              <dd className="mt-1 text-sm text-gray-900">
-                                <a href={listing.facebook.startsWith('http') ? listing.facebook : `https://${listing.facebook}`} 
-                                   target="_blank" rel="noopener noreferrer" 
-                                   className="text-blue-600 hover:text-blue-800 underline">
-                                  {listing.facebook}
-                                </a>
-                              </dd>
-                            </div>
-                          )}
-                          {listing.twitter && (
-                            <div>
-                              <dt className="text-sm font-medium text-gray-500">Twitter</dt>
-                              <dd className="mt-1 text-sm text-gray-900">
-                                <a href={listing.twitter.startsWith('http') ? listing.twitter : `https://${listing.twitter}`} 
-                                   target="_blank" rel="noopener noreferrer" 
-                                   className="text-blue-600 hover:text-blue-800 underline">
-                                  {listing.twitter}
-                                </a>
-                              </dd>
-                            </div>
-                          )}
-                          {listing.linkedin && (
-                            <div>
-                              <dt className="text-sm font-medium text-gray-500">LinkedIn</dt>
-                              <dd className="mt-1 text-sm text-gray-900">
-                                <a href={listing.linkedin.startsWith('http') ? listing.linkedin : `https://${listing.linkedin}`} 
-                                   target="_blank" rel="noopener noreferrer" 
-                                   className="text-blue-600 hover:text-blue-800 underline">
-                                  {listing.linkedin}
-                                </a>
-                              </dd>
-                            </div>
-                          )}
-                          {listing.instagram && (
-                            <div>
-                              <dt className="text-sm font-medium text-gray-500">Instagram</dt>
-                              <dd className="mt-1 text-sm text-gray-900">
-                                <a href={listing.instagram.startsWith('http') ? listing.instagram : `https://${listing.instagram}`} 
-                                   target="_blank" rel="noopener noreferrer" 
-                                   className="text-blue-600 hover:text-blue-800 underline">
-                                  {listing.instagram}
-                                </a>
-                              </dd>
-                            </div>
-                          )}
-                          {listing.youtube && (
-                            <div>
-                              <dt className="text-sm font-medium text-gray-500">YouTube</dt>
-                              <dd className="mt-1 text-sm text-gray-900">
-                                <a href={listing.youtube.startsWith('http') ? listing.youtube : `https://${listing.youtube}`} 
-                                   target="_blank" rel="noopener noreferrer" 
-                                   className="text-blue-600 hover:text-blue-800 underline">
-                                  {listing.youtube}
-                                </a>
-                              </dd>
-                            </div>
-                          )}
-                          {listing.other_social_media && (
-                            <div className="md:col-span-2">
-                              <dt className="text-sm font-medium text-gray-500">Other Social Media</dt>
-                              <dd className="mt-1 text-sm text-gray-900 whitespace-pre-line">{listing.other_social_media}</dd>
-                            </div>
-                          )}
-                        </dl>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Additional Information */}
-                  {(listing.other_details || listing.photos || listing.videos || listing.documents) && (
-                    <div className="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                      <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                        <h2 className="text-xl font-bold text-gray-900">Additional Information</h2>
-                      </div>
-                      <div className="p-6 space-y-6">
-                        {listing.other_details && (
-                          <div>
-                            <h3 className="text-sm font-medium text-gray-900 mb-2">Other Details</h3>
-                            <p className="text-sm text-gray-700 whitespace-pre-line">{listing.other_details}</p>
-                          </div>
-                        )}
-                        {listing.photos && (
-                          <div>
-                            <h3 className="text-sm font-medium text-gray-900 mb-2">Photos</h3>
-                            <p className="text-sm text-gray-700 whitespace-pre-line">{listing.photos}</p>
-                          </div>
-                        )}
-                        {listing.videos && (
-                          <div>
-                            <h3 className="text-sm font-medium text-gray-900 mb-2">Videos</h3>
-                            <p className="text-sm text-gray-700 whitespace-pre-line">{listing.videos}</p>
-                          </div>
-                        )}
-                        {listing.documents && (
-                          <div>
-                            <h3 className="text-sm font-medium text-gray-900 mb-2">Documents</h3>
-                            <p className="text-sm text-gray-700 whitespace-pre-line">{listing.documents}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Listing Agent Information */}
-                  {(listing.listing_agent || listing.agent_phone_number) && (
-                    <div className="mb-8 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                      <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                        <h2 className="text-xl font-bold text-gray-900">Listing Agent</h2>
-                      </div>
-                      <div className="p-6">
-                        <dl className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {renderDetail('Agent Name', listing.listing_agent)}
-                          {renderDetail('Agent Phone', listing.agent_phone_number)}
-                        </dl>
-                      </div>
-                    </div>
-                  )}
+
                 </div>
                 
-                {/* Right side - Contact form */}
-                <div className="lg:col-span-1">
-                  <div className="bg-white border border-gray-200 p-6 rounded-lg shadow-sm sticky top-8">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Interested in this Business?</h2>
-                    <p className="text-gray-600 mb-4">Fill out the form below to contact the seller and learn more about this opportunity.</p>
-                    
-                    <form onSubmit={handleContactForm}>
-                      <div className="mb-4">
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                 {/* Right: Contact Form */}
+                <div className="bg-white shadow-md rounded-2xl p-8 border border-gray-100 self-start max-w-full">
+                  <h2 className="text-2xl font-semibold text-[#0B2254] mb-6">
+                    Contact Form
+                  </h2>
+
+                  <form className="space-y-5">
+                    {/* Full Name */}
+                    <input
+                      type="text"
+                      placeholder="Full Name"
+                      className="w-full rounded-full border border-gray-300 py-3 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B2254]"
+                    />
+
+                    {/* Email + Zip Code (70/30 split) */}
+                    <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
+                      <input
+                        type="email"
+                        placeholder="Email Address"
+                        className="md:w-[60%] w-full rounded-full border border-gray-300 py-3 px-6 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B2254]"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Zip Code"
+                        className="md:w-[40%] w-full rounded-full border border-gray-300 py-3 px-6 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B2254]"
+                      />
+                    </div>
+
+                    {/* Phone */}
+                    <input
+                      type="text"
+                      placeholder="Phone Number"
+                      className="w-full rounded-full border border-gray-300 py-3 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B2254]"
+                    />
+
+                    {/* Amount to Invest + Time Frame */}
+                    <div className="grid grid-cols-20 gap-4">
+                      <div className="col-span-11">
                         <input
                           type="text"
-                          id="name"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleInputChange}
-                          className={`block w-full rounded-md shadow-sm focus:ring-[#010079] focus:border-[#010079] sm:text-sm p-2 ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
-                          required
+                          placeholder="Amount to Invest"
+                          className="w-full rounded-full border border-gray-300 py-3 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B2254]"
                         />
-                        {errors.name && (
-                          <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                        )}
                       </div>
-                      
-                      <div className="mb-4">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                      <div className="col-span-9">
                         <input
-                          type="email"
-                          id="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          className={`block w-full rounded-md shadow-sm focus:ring-[#010079] focus:border-[#010079] sm:text-sm p-2 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
-                          required
-                        />
-                        {errors.email && (
-                          <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                        )}
-                      </div>
-                      
-                      <div className="mb-4">
-                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                        <input
-                          type="tel"
-                          id="phone"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#010079] focus:border-[#010079] sm:text-sm p-2"
+                          type="text"
+                          placeholder="Time Frame"
+                          className="w-full rounded-full border border-gray-300 py-3 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B2254]"
                         />
                       </div>
-                      
-                      <div className="mb-4">
-                        <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                        <textarea
-                          id="message"
-                          name="message"
-                          rows={4}
-                          value={formData.message}
-                          onChange={handleInputChange}
-                          className={`block w-full rounded-md shadow-sm focus:ring-[#010079] focus:border-[#010079] sm:text-sm p-2 ${errors.message ? 'border-red-500' : 'border-gray-300'}`}
-                          placeholder="I'm interested in learning more about this business opportunity..."
-                          required
-                        ></textarea>
-                        {errors.message && (
-                          <p className="mt-1 text-sm text-red-600">{errors.message}</p>
-                        )}
-                      </div>
-                      
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className={`w-full border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-90'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#010079]`}
-                        style={{ backgroundColor: '#010079' }}
-                      >
-                        {isSubmitting ? 'Sending...' : 'Contact Seller'}
-                      </button>
-                    </form>
-                    
-                    {/* Listing contact details */}
-                    {(listing.listing_agent || listing.email) && (
-                      <div className="mt-6 pt-6 border-t border-gray-200">
-                        <h3 className="text-sm font-medium text-gray-900 mb-2">Listing Contact</h3>
-                        {listing.listing_agent && (
-                          <p className="text-gray-600">{listing.listing_agent}</p>
-                        )}
-                        <p className="text-gray-600">{listing.email}</p>
-                      </div>
-                    )}
-                  </div>
+                    </div>
+
+                    {/* Message */}
+                    <textarea
+                      rows={3}
+                      placeholder="Optional Message"
+                      className="w-full rounded-2xl border border-gray-300 py-3 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B2254]"
+                    />
+
+                    {/* Button */}
+                    <button
+                      type="button"
+                      className="w-full md:w-auto bg-[#0B2254] text-white font-medium py-3 px-10 rounded-full hover:bg-[#132e73] transition"
+                    >
+                      Send Message
+                    </button>
+
+                    {/* Terms Notice */}
+                    <p className="text-xs text-gray-500 mt-2">
+                      By clicking the button, you agree to Monarch’s{" "}
+                      <a href="#" className="text-[#0B2254] underline">
+                        Terms of Use
+                      </a>{" "}
+                      and{" "}
+                      <a href="#" className="text-[#0B2254] underline">
+                        Privacy Notice
+                      </a>
+                      .
+                    </p>
+                  </form>
                 </div>
               </div>
               
@@ -823,9 +662,74 @@ export default function PublicListingDetail({ listing, auth, userInterested = fa
                   <svg className="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
                   </svg>
-                  Back to All Listings
+                  Back to All Listings  
                 </a>
               </div>
+
+              {/* ✅ Similar Listings Section */}
+                <section className="mt-16 border-t border-gray-200 pt-10">
+                  <h2 className="text-[24px] font-semibold text-[#0B2254] mb-8">
+                    Similar Listings
+                  </h2>
+
+                  {/* If loading or no data */}
+                  {!listing.similar_listings || listing.similar_listings.length === 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {[1, 2, 3].map((i) => (
+                        <div
+                          key={i}
+                          className="bg-white border border-[#0B2254]/20 rounded-2xl p-4 animate-pulse"
+                        >
+                          <div className="bg-gray-200 h-48 w-full rounded-xl mb-4" />
+                          <div className="h-5 bg-gray-200 rounded w-2/3 mb-2" />
+                          <div className="h-4 bg-gray-200 rounded w-5/6 mb-4" />
+                          <div className="h-8 bg-gray-200 rounded-full w-24 mx-auto" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {listing.similar_listings.map((item: Listing) => (
+                        <div
+                          key={item.id}
+                          className="bg-white border border-[#0B2254]/20 rounded-2xl p-4 flex flex-col hover:shadow-md transition-shadow duration-300"
+                        >
+                          {/* Image */}
+                          <div className="overflow-hidden rounded-xl mb-4">
+                            <img
+                              src={
+                                item.image_urls?.find((img) => img.is_primary)?.url ||
+                                item.image_urls?.[0]?.url ||
+                                '/images/placeholder.jpg'
+                              }
+                              alt={item.headline}
+                              className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+
+                          {/* Title + Description */}
+                          <h3 className="text-[18px] font-bold text-[#0B2254] mb-1">
+                            {item.headline}
+                          </h3>
+                          <p className="text-[14px] text-[#3D3935] mb-4">
+                            Connect with verified business brokers who can help you buy or sell your business
+                          </p>
+
+                          {/* Button */}
+                          <div className="mt-auto">
+                            <a
+                              href={`/listings/${item.id}`}
+                              className="inline-block text-[#0B2254] border border-[#0B2254]/30 rounded-full px-5 py-2 text-sm font-medium hover:bg-[#0B2254] hover:text-white transition-colors duration-300"
+                            >
+                              See More
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </section>
+
             </div>
           </div>
         </div>

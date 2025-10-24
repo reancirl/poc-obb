@@ -6,7 +6,7 @@ use Inertia\Inertia;
 
 // Public routes
 Route::get('/', [\App\Http\Controllers\PublicListingController::class, 'welcome'])->name('home');
-
+Route::get('/latest-listings', [ListingController::class, 'latest']);
 Route::get('/all-listings', [\App\Http\Controllers\PublicListingController::class, 'index'])->name('public-listings');
 
 // Hidden admin login route (keep this secret!)
@@ -17,6 +17,19 @@ Route::get('/admin-portal-x7k9m', function () {
 Route::get('/search-business', function () {
     return Inertia::render('SearchBusiness');
 })->name('search-business');
+
+Route::get('/about', function () {
+    return Inertia::render('About');
+})->name('about');
+
+Route::get('/contact', function () {
+    return Inertia::render('Contact');
+})->name('contact');
+
+Route::get('/sell-a-business', function () {
+    return Inertia::render('SellABusiness');
+})->name('sell-a-business');
+
 
 // Public listing routes
 Route::get('/listings', [\App\Http\Controllers\PublicListingController::class, 'index'])->name('listings.index');
@@ -115,13 +128,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('feedback');
     });
     
-    // Broker upgrade routes
-    Route::prefix('broker')->name('broker.')->group(function () {
-        Route::get('/upgrade', [\App\Http\Controllers\BrokerUpgradeController::class, 'show'])->name('upgrade');
-        Route::post('/upgrade', [\App\Http\Controllers\BrokerUpgradeController::class, 'store']);
-        Route::get('/profile', [\App\Http\Controllers\BrokerUpgradeController::class, 'profile'])->name('profile');
-        Route::patch('/profile', [\App\Http\Controllers\BrokerUpgradeController::class, 'update'])->name('update');
-    });
+    // Broker upgrade & profile routes
+        Route::prefix('broker')->name('broker.')->group(function () {
+            Route::get('/upgrade', [\App\Http\Controllers\BrokerUpgradeController::class, 'show'])
+                ->name('upgrade');
+            Route::post('/upgrade', [\App\Http\Controllers\BrokerUpgradeController::class, 'store'])
+                ->name('upgrade.store');
+            Route::get('/profile', [\App\Http\Controllers\BrokerUpgradeController::class, 'profile'])
+                ->name('profile');
+            Route::match(['patch', 'post'], '/profile', [\App\Http\Controllers\BrokerUpgradeController::class, 'update'])
+                ->name('update');
+        });
+
 });
 
 // Settings routes

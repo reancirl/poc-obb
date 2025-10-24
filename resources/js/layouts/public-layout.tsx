@@ -26,7 +26,7 @@ export default function PublicLayout({ children, auth }: Props) {
             <nav className="hidden md:flex justify-start space-x-8 text-gray-800 font-medium">
               <Link href={route('home')} className="hover:text-[#010079] transition-colors">Home</Link>
               <Link href="/listings" className="hover:text-[#010079] transition-colors">Buy a Business</Link>
-              <Link href="/sell" className="hover:text-[#010079] transition-colors">Sell a Business</Link>
+              <Link href="/sell-a-business" className="hover:text-[#010079] transition-colors">Sell a Business</Link>
               <Link href="/brokers" className="hover:text-[#010079] transition-colors">Brokers</Link>
               <Link href="/about" className="hover:text-[#010079] transition-colors">About</Link>
               <Link href="/contact" className="hover:text-[#010079] transition-colors">Contact</Link>
@@ -73,7 +73,7 @@ export default function PublicLayout({ children, auth }: Props) {
             <nav className="flex flex-col px-4 py-4 space-y-3 text-gray-800 font-medium">
               <Link href={route('home')} className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>Home</Link>
               <Link href="/listings" className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>Buy a Business</Link>
-              <Link href="/sell" className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>Sell a Business</Link>
+              <Link href="/sell-a-business" className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>Sell a Business</Link>
               <Link href="/brokers" className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>Brokers</Link>
               <Link href="/about" className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>About</Link>
               <Link href="/contact" className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
