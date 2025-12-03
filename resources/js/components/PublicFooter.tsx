@@ -1,9 +1,12 @@
 import React from "react";
+import { Link } from "@inertiajs/react";
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
+
+type FooterLinkItem = string | { label: string; href?: string };
 
 interface FooterLinkGroup {
   title: string;
-  links: string[];
+  links: FooterLinkItem[];
 }
 
 interface SocialLink {
@@ -23,20 +26,44 @@ interface PublicFooterProps {
 
 const defaultLinks: FooterLinkGroup[] = [
   {
-    title: "Search",
-    links: ["Established Business", "Franchise for Sale", "Assets Sale", "Business Real Estate", "Find a Broker"],
+    title: "Site",
+    links: [
+      { label: "Home", href: "/" },
+      { label: "Pricing", href: "/pricing" },
+      { label: "Browse Listings", href: "/listings" },
+      { label: "Sell a Business", href: "/sell-a-business" },
+      { label: "Brokers", href: "/brokers" },
+    ],
   },
   {
     title: "Company",
-    links: ["About Us", "Contact Us", "Terms of Use", "Privacy Notice", "Sitemap"],
+    links: [
+      { label: "About Us", href: "/about" },
+      { label: "Contact Us", href: "/contact" },
+      { label: "Terms of Use", href: "#" },
+      { label: "Privacy Notice", href: "#" },
+      { label: "Sitemap", href: "#" },
+    ],
   },
   {
     title: "Resources",
-    links: ["Blog", "Guides", "Case Studies", "FAQs", "Support"],
+    links: [
+      { label: "Blog", href: "#" },
+      { label: "Guides", href: "#" },
+      { label: "Case Studies", href: "#" },
+      { label: "FAQs", href: "#" },
+      { label: "Support", href: "#" },
+    ],
   },
   {
     title: "Connect",
-    links: ["Newsletter", "Events", "Partners", "Community", "Careers"],
+    links: [
+      { label: "Newsletter", href: "#" },
+      { label: "Events", href: "#" },
+      { label: "Partners", href: "#" },
+      { label: "Community", href: "#" },
+      { label: "Careers", href: "#" },
+    ],
   },
 ];
 
@@ -98,14 +125,21 @@ const PublicFooter: React.FC<PublicFooterProps> = ({
             <div key={idx}>
               <h4 className="text-[#102A5C] font-semibold mb-4">{group.title}</h4>
               <ul className="flex flex-col gap-2">
-                {group.links.map((link, i) => (
-                  <li
-                    key={i}
-                    className="text-gray-600 hover:text-gray-900 cursor-pointer text-sm transition-colors duration-300 hover:translate-x-1"
-                  >
-                    {link}
-                  </li>
-                ))}
+                {group.links.map((link, i) => {
+                  const item = typeof link === "string" ? { label: link } : link;
+                  return (
+                    <li
+                      key={i}
+                      className="text-gray-600 hover:text-gray-900 text-sm transition-colors duration-300 hover:translate-x-1"
+                    >
+                      {item.href ? (
+                        <Link href={item.href}>{item.label}</Link>
+                      ) : (
+                        <span>{item.label}</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

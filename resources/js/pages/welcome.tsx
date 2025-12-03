@@ -164,6 +164,31 @@ export default function Welcome({
         </div>
       </div>
 
+      {/* Pricing Teaser */}
+      <section className="bg-white mt-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 md:-mt-6">
+          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#010079]">
+                Brokers & Sellers
+              </p>
+              <h2 className="text-2xl font-bold text-gray-900 mt-1">See our pricing and plans</h2>
+              <p className="text-gray-700 mt-2">
+                Choose the plan that fits your goals, from lean DIY to high-visibility upgrades.
+              </p>
+            </div>
+            <Link
+              href="/pricing"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-md text-sm font-semibold text-white shadow-sm"
+              style={{ backgroundColor: '#010079' }}
+            >
+              See Pricing
+              <span className="ml-2">-&gt;</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Recommended Brokers Section */}
       <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

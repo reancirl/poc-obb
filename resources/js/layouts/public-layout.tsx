@@ -28,6 +28,7 @@ export default function PublicLayout({ children, auth }: Props) {
               <Link href="/listings" className="hover:text-[#010079] transition-colors">Buy a Business</Link>
               <Link href="/sell-a-business" className="hover:text-[#010079] transition-colors">Sell a Business</Link>
               <Link href="/brokers" className="hover:text-[#010079] transition-colors">Brokers</Link>
+              <Link href={route('pricing')} className="hover:text-[#010079] transition-colors">Pricing</Link>
             </nav>
 
             {/* Center: Logo */}
@@ -73,6 +74,7 @@ export default function PublicLayout({ children, auth }: Props) {
               <Link href="/listings" className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>Buy a Business</Link>
               <Link href="/sell-a-business" className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>Sell a Business</Link>
               <Link href="/brokers" className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>Brokers</Link>
+              <Link href={route('pricing')} className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
 
               <div className="border-t border-gray-200 pt-3">
                 <Link

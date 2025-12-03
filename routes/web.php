@@ -30,6 +30,10 @@ Route::get('/sell-a-business', function () {
     return Inertia::render('SellABusiness');
 })->name('sell-a-business');
 
+Route::get('/pricing', function () {
+    return Inertia::render('Pricing');
+})->name('pricing');
+
 
 // Public listing routes
 Route::get('/listings', [\App\Http\Controllers\PublicListingController::class, 'index'])->name('listings.index');
