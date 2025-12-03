@@ -64,7 +64,7 @@ export function AdminNavMain({ isCollapsed }: AdminNavMainProps) {
         },
         {
             title: 'Settings',
-            href: '/admin/settings',
+            href: '/admin/settings/profile',
             icon: Settings,
             description: 'System Configuration'
         }

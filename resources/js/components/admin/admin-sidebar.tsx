@@ -3,7 +3,6 @@ import { Shield, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { AdminNavMain } from './admin-nav-main';
 import { AdminNavUser } from './admin-nav-user';
-import { AdminNavFooter } from './admin-nav-footer';
 
 export function AdminSidebar() {
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -11,10 +10,11 @@ export function AdminSidebar() {
     return (
         <div className={cn(
             'flex flex-col bg-slate-800 border-r border-slate-700 transition-all duration-300',
+            'sticky top-0 h-screen max-h-screen overflow-hidden',
             isCollapsed ? 'w-16' : 'w-64'
         )}>
             {/* Header */}
-            <div className="p-4 border-b border-slate-700">
+            <div className="relative p-4 border-b border-slate-700">
                 <div className="flex items-center gap-3">
                     <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
                         <Shield className="h-6 w-6 text-white" />
@@ -35,14 +35,13 @@ export function AdminSidebar() {
             </div>
 
             {/* Navigation */}
-            <div className="flex-1 py-4">
+            <div className="flex-1 py-4 overflow-y-auto min-h-0">
                 <AdminNavMain isCollapsed={isCollapsed} />
             </div>
 
             {/* Footer */}
             <div className="border-t border-slate-700">
                 <AdminNavUser isCollapsed={isCollapsed} />
-                <AdminNavFooter isCollapsed={isCollapsed} />
             </div>
         </div>
     );

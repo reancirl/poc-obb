@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
-import { ExternalLink, HelpCircle, Code } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 interface AdminNavFooterProps {
     isCollapsed: boolean;
@@ -8,16 +8,6 @@ interface AdminNavFooterProps {
 
 export function AdminNavFooter({ isCollapsed }: AdminNavFooterProps) {
     const footerItems = [
-        {
-            title: 'Documentation',
-            href: '/admin/docs',
-            icon: HelpCircle,
-        },
-        {
-            title: 'System Info',
-            href: '/admin/system',
-            icon: Code,
-        },
         {
             title: 'Support',
             href: 'https://support.example.com',

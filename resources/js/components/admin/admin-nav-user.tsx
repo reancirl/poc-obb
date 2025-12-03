@@ -40,7 +40,7 @@ export function AdminNavUser({ isCollapsed }: AdminNavUserProps) {
             {!isCollapsed && (
                 <div className="mt-2 space-y-1">
                     <Link
-                        href="/settings"
+                        href={route('admin.settings.profile')}
                         className="flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-colors"
                     >
                         <Settings className="h-4 w-4" />

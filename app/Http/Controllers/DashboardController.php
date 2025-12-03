@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Listing;
+use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
@@ -32,8 +36,45 @@ class DashboardController extends Controller
      */
     public function admin(Request $request): Response
     {
+        $now = now();
+
+        $stats = [
+            'totalUsers' => User::count(),
+            'adminCount' => User::where('role', 'admin')->count(),
+            'memberCount' => User::where('role', 'member')->count(),
+            'sellerCount' => User::where('role', 'seller')->count(),
+            'buyerCount' => User::where('role', 'buyer')->count(),
+            'verifiedUsers' => User::whereNotNull('email_verified_at')->count(),
+            'suspendedUsers' => User::whereNotNull('suspended_at')->count(),
+            'newUsers30' => User::where('created_at', '>=', $now->copy()->subDays(30))->count(),
+        ];
+
+        $listingStats = [
+            'total' => Listing::count(),
+            'published' => Listing::where('status', 'published')->count(),
+            'draft' => Listing::where('status', 'draft')->count(),
+            'sold' => Listing::where('status', 'sold')->count(),
+            'inactive' => Listing::where('status', 'inactive')->count(),
+            'newLast30' => Listing::where('created_at', '>=', $now->copy()->subDays(30))->count(),
+        ];
+
+        $leadStats = [
+            'total' => 0,
+            'recentLast30' => 0,
+        ];
+
+        if (Schema::hasTable('interested_listings')) {
+            $leadStats['total'] = DB::table('interested_listings')->count();
+            $leadStats['recentLast30'] = DB::table('interested_listings')
+                ->where('created_at', '>=', $now->copy()->subDays(30))
+                ->count();
+        }
+
         return Inertia::render('Admin/Dashboard', [
-            'user' => $request->user()
+            'user' => $request->user(),
+            'stats' => $stats,
+            'listingStats' => $listingStats,
+            'leadStats' => $leadStats,
         ]);
     }
     

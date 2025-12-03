@@ -1,6 +1,11 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
+use App\Http\Controllers\Admin\SystemLogController;
+use App\Http\Controllers\Admin\DatabaseController;
+use App\Http\Controllers\Admin\SecurityController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -62,6 +67,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin routes
     Route::prefix('admin')->middleware(['role:admin'])->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
+        Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
+        Route::get('/logs', [SystemLogController::class, 'index'])->name('logs');
+        Route::get('/database', [DatabaseController::class, 'index'])->name('database');
+        Route::get('/security', [SecurityController::class, 'index'])->name('security');
+        Route::get('/settings/profile', function () {
+            return Inertia::render('Admin/Settings/Profile');
+        })->name('settings.profile');
+        Route::get('/settings/profile/edit', [AdminSettingsController::class, 'editProfile'])->name('settings.profile.edit');
+        Route::patch('/settings/profile', [AdminSettingsController::class, 'updateProfile'])->name('settings.profile.update');
+        Route::get('/settings/password', [AdminSettingsController::class, 'editPassword'])->name('settings.password.edit');
+        Route::put('/settings/password', [AdminSettingsController::class, 'updatePassword'])->name('settings.password.update');
+        Route::redirect('/settings', '/admin/settings/profile')->name('settings');
         
         // User Management
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
@@ -94,13 +111,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'returnUrl' => route('admin.dashboard')
             ]);
         })->name('setup');
-
-        Route::get('/settings', function () {
-            return Inertia::render('FeatureInDevelopment', [
-                'featureName' => 'Admin Settings',
-                'returnUrl' => route('admin.dashboard')
-            ]);
-        })->name('settings');
 
         Route::get('/dev-settings', function () {
             return Inertia::render('FeatureInDevelopment', [
