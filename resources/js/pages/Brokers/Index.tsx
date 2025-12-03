@@ -33,7 +33,7 @@ export default function BrokersIndex({ brokers, auth }: Props) {
     <PublicLayout auth={auth}>
       <Head title="Business Brokers Directory" />
       
-      <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto pt-20 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-8">
           <div className="p-8 text-center">

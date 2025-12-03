@@ -28,8 +28,6 @@ export default function PublicLayout({ children, auth }: Props) {
               <Link href="/listings" className="hover:text-[#010079] transition-colors">Buy a Business</Link>
               <Link href="/sell-a-business" className="hover:text-[#010079] transition-colors">Sell a Business</Link>
               <Link href="/brokers" className="hover:text-[#010079] transition-colors">Brokers</Link>
-              <Link href="/about" className="hover:text-[#010079] transition-colors">About</Link>
-              <Link href="/contact" className="hover:text-[#010079] transition-colors">Contact</Link>
             </nav>
 
             {/* Center: Logo */}
@@ -75,8 +73,6 @@ export default function PublicLayout({ children, auth }: Props) {
               <Link href="/listings" className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>Buy a Business</Link>
               <Link href="/sell-a-business" className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>Sell a Business</Link>
               <Link href="/brokers" className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>Brokers</Link>
-              <Link href="/about" className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>About</Link>
-              <Link href="/contact" className="hover:text-[#010079]" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
 
               <div className="border-t border-gray-200 pt-3">
                 <Link
@@ -102,7 +98,7 @@ export default function PublicLayout({ children, auth }: Props) {
       </header>
 
       {/* ✅ Main Content (with top padding for sticky header) */}
-      <main className="flex-1 pt-[80px]">{children}</main>
+      <main className="flex-1 pt-20">{children}</main>
 
       {/* ✅ Footer */}
       <PublicFooter />

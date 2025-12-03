@@ -71,7 +71,7 @@ export default function PublicListings({ listings, filters, auth, interestedList
   return (
     <PublicLayout auth={auth}>
       <Head title="Business Listings" />
-      <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <div className="max-w-7xl pt-20 mx-auto sm:px-6 lg:px-8">
         
         {/* Search and filter */}
         <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
