@@ -97,7 +97,7 @@ const { auth, industries, industryChildren, states } = usePage<Props>().props;
             listing_type: 'Established Business for Sale', // Default to first option
             industry: 'Online & Technology', // Default to first option that matches Industry constants
             industry_subcategory: '',
-            location_confidentiality: 'Public', // Default to first option
+            location_confidentiality: 'Show my full location (most visibility)', // Default to most visible option
             real_estate_type: '',
             headline: '',
             address: '',

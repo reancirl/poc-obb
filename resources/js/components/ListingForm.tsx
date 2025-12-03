@@ -235,6 +235,29 @@ export default function ListingForm({
               <p className="text-sm text-red-500">{errors.state}</p>
             )}
           </div>
+
+          {/* Location Confidentiality */}
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="location_confidentiality">Location Confidentiality *</Label>
+            <Select
+              value={String(data.location_confidentiality || '')}
+              onValueChange={(value) => setData('location_confidentiality', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select visibility preference" />
+              </SelectTrigger>
+              <SelectContent>
+                {locationConfidentialityOptions.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.location_confidentiality && (
+              <p className="text-sm text-red-500">{errors.location_confidentiality}</p>
+            )}
+          </div>
         </div>
       </div>
 
